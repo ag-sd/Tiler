@@ -7,8 +7,7 @@ namespace Tiler.ui
 {
     public class MainIcon : IDisposable
     {
-        
-        NotifyIcon ni;
+        readonly NotifyIcon ni;
 
         public MainIcon()
         {
@@ -23,10 +22,10 @@ namespace Tiler.ui
             ni.Visible = true;
             
             // Attach a context menu.
-            ni.ContextMenuStrip = new ContextMenus().Create();
+            ni.ContextMenuStrip = ContextMenus.Create();
         }
-        
-        void ni_MouseClick(object sender, MouseEventArgs e)
+
+        private static void ni_MouseClick(object sender, MouseEventArgs e)
         {
             // Handle mouse button clicks.
             if (e.Button == MouseButtons.Left)

@@ -48,6 +48,8 @@
     <ItemGroup>
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="runtime\TilerTasks.cs" />
+        <Compile Include="runtime\WindowsShell.cs" />
         <Compile Include="ui\ContextMenus.cs" />
         <Compile Include="ui\MainIcon.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">

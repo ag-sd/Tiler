@@ -2,19 +2,20 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Tiler.runtime;
 
 namespace Tiler.ui
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	class ContextMenus
+	internal static class ContextMenus
 	{
 		/// <summary>
 		/// Creates this instance.
 		/// </summary>
 		/// <returns>ContextMenuStrip</returns>
-		public ContextMenuStrip Create()
+		public static ContextMenuStrip Create()
 		{
 			// Add the default menu options.
 			ContextMenuStrip menu = new ContextMenuStrip();
@@ -39,9 +40,9 @@ namespace Tiler.ui
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		void AutoArrange_Click(object sender, EventArgs e)
+		private static void AutoArrange_Click(object sender, EventArgs e)
 		{
-			Process.Start("explorer", null);
+			TilerTasks.ReArrangeWindows();
 		}
 
 		/// <summary>
@@ -49,7 +50,7 @@ namespace Tiler.ui
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		void About_Click(object sender, EventArgs e)
+		private static void About_Click(object sender, EventArgs e)
 		{
 			Console.WriteLine("About!");
 		}
@@ -59,7 +60,7 @@ namespace Tiler.ui
 		/// </summary>
 		/// <param name="sender">The sender.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		void Exit_Click(object sender, EventArgs e)
+		private static void Exit_Click(object sender, EventArgs e)
 		{
 			// Quit without further ado.
 			Application.Exit();
