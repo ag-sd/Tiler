@@ -1,0 +1,68 @@
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Tiler.ui
+{
+	/// <summary>
+	/// 
+	/// </summary>
+	class ContextMenus
+	{
+		/// <summary>
+		/// Creates this instance.
+		/// </summary>
+		/// <returns>ContextMenuStrip</returns>
+		public ContextMenuStrip Create()
+		{
+			// Add the default menu options.
+			ContextMenuStrip menu = new ContextMenuStrip();
+
+			// Auto Arrange.
+			menu.Items.Add("Auto Arrange Now", null, AutoArrange_Click);
+			
+			// About.
+			menu.Items.Add("About", null, About_Click);
+
+			// Separator.
+			menu.Items.Add(new ToolStripSeparator());
+
+			// Exit.
+			menu.Items.Add("Exit", SystemIcons.WinLogo.ToBitmap(), Exit_Click);
+
+			return menu;
+		}
+
+		/// <summary>
+		/// Handles the Click event of Auto Arrange.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		void AutoArrange_Click(object sender, EventArgs e)
+		{
+			Process.Start("explorer", null);
+		}
+
+		/// <summary>
+		/// Handles the Click event of the About control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		void About_Click(object sender, EventArgs e)
+		{
+			Console.WriteLine("About!");
+		}
+
+		/// <summary>
+		/// Processes a menu item.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		void Exit_Click(object sender, EventArgs e)
+		{
+			// Quit without further ado.
+			Application.Exit();
+		}
+	}
+}
