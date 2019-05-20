@@ -23,6 +23,7 @@ namespace Tiler.ui
             
             // Attach a context menu.
             ni.ContextMenuStrip = ContextMenus.Create();
+            
         }
 
         private static void ni_MouseClick(object sender, MouseEventArgs e)
@@ -31,7 +32,7 @@ namespace Tiler.ui
             if (e.Button == MouseButtons.Left)
             {
                 // Start Windows Explorer.
-                Process.Start("explorer", null);
+                new WindowPlacementConfig().ShowDialog();
             }
         }
 

@@ -18,12 +18,14 @@ namespace Tiler
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (MainIcon mi = new MainIcon())
-            {
-                mi.Display();
-                
-                Application.Run();
-            }
+//            using (MainIcon mi = new MainIcon())
+//            {
+//                mi.Display();
+//                
+//                Application.Run();
+//            }
+//            new WindowPlacementConfig().Show();
+            Application.Run(new WindowPlacementConfig());
         }
     }
 }

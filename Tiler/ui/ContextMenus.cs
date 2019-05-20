@@ -18,10 +18,13 @@ namespace Tiler.ui
 		public static ContextMenuStrip Create()
 		{
 			// Add the default menu options.
-			ContextMenuStrip menu = new ContextMenuStrip();
+			var menu = new ContextMenuStrip();
 
 			// Auto Arrange.
 			menu.Items.Add("Auto Arrange Now", null, AutoArrange_Click);
+			
+			// Window Placement.
+			menu.Items.Add("Configure Window Placements", null, WindowPlacementConfig_Click);
 			
 			// About.
 			menu.Items.Add("About", null, About_Click);
@@ -43,6 +46,11 @@ namespace Tiler.ui
 		private static void AutoArrange_Click(object sender, EventArgs e)
 		{
 			TilerTasks.ReArrangeWindows();
+		}
+
+		private static void WindowPlacementConfig_Click(object sender, EventArgs e)
+		{
+			new WindowPlacementConfig().ShowDialog();
 		}
 
 		/// <summary>
