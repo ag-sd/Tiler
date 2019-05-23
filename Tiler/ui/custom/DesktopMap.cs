@@ -33,7 +33,6 @@ namespace Tiler.ui.custom
 
         public DesktopMap()
         {
-            BackColor = SystemColors.Window;
             _screen = Screen.PrimaryScreen;
             ResizeRedraw = true;
             Resize += OnResize;

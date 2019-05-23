@@ -1,22 +1,95 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Tiler.runtime;
 
 namespace Tiler.ui.custom
 {
+    public class ProcessListItem : ListViewItem
+    {
+        private class SavedPlacement
+        {
+            public Placement Placement { get; }
+            public string Desktop { get; }
+
+            public SavedPlacement(Placement placement, string desktop)
+            {
+                Placement = placement;
+                Desktop = desktop;
+            }
+        }
+        
+        private Placement _placement = Placement.None;
+        private string _desktop;
+        
+        public ProcessListItem(string name, string caption)
+        {
+            Text = name;
+            Caption = caption;
+            // Check for a saved placement
+            if (Properties.Settings.Default == null)
+//            {
+//                Properties.Settings.Default.Properties.Add(new SettingsProperty());
+//                    //["placement"] = new Dictionary<string, SavedPlacement>()
+//            }
+            var props = (Dictionary<string, SavedPlacement>) Properties.Settings.Default["placement"];
+            if (props?[Text] == null)
+            {
+                SubItems.Add(new ListViewSubItem(this, string.Empty));
+                SubItems.Add(new ListViewSubItem(this, string.Empty));
+            }
+            else
+            {
+                var savedPlacement = props[Text];
+                _placement = savedPlacement.Placement;
+                SubItems.Add(new ListViewSubItem(this, savedPlacement.Placement.Name));
+                _desktop = savedPlacement.Desktop;
+                SubItems.Add(new ListViewSubItem(this, _desktop));
+            }
+        }
+
+        public void SavePlacement()
+        {
+            var dict = (Dictionary<string, SavedPlacement>) Properties.Settings.Default["placements"] ?? 
+                new Dictionary<string, SavedPlacement>();
+            dict[Text] = new SavedPlacement(_placement, _desktop);
+            Properties.Settings.Default["placements"] = dict;
+            Properties.Settings.Default.Save();
+        }
+        
+        public string Caption { get; }
+
+        public Placement Placement
+        {
+            get => _placement;
+            set
+            {
+                _placement = value;
+                SubItems[0].Name = _placement.Name;
+            }
+        }
+        
+        public string Desktop
+        {
+            get => _desktop;
+            set
+            {
+                _desktop = value;
+                SubItems[1].Name = value;
+            }
+        }
+    }
+    
     public class ProcessListView : ListView
     {
-
-        private readonly object _config;
-
         private readonly ImageList _lvwImages;
 
-        public ProcessListView(object config)
+        public ProcessListView()
         {
-            _config = config;
-            
             _lvwImages = new ImageList();
 
             InitUi();
@@ -33,6 +106,8 @@ namespace Tiler.ui.custom
             GridLines = false;
             Sorting = SortOrder.Descending;
             Columns.Add("Process", -2, HorizontalAlignment.Left);
+            Columns.Add("Placement", -2, HorizontalAlignment.Left);
+            Columns.Add("Desktop", -2, HorizontalAlignment.Left);
             SmallImageList = _lvwImages;
             Font = new Font("Segoe UI", 12f);
             
@@ -50,10 +125,9 @@ namespace Tiler.ui.custom
                 if (process.MainWindowHandle == IntPtr.Zero || string.IsNullOrEmpty(process.MainWindowTitle)) continue;
 
                 _lvwImages.Images.Add(process.ProcessName, getProcessIcon(process));
-                var lvi = new ListViewItem
+                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
                 {
-                    ImageKey = process.ProcessName,
-                    Text = process.ProcessName
+                    ImageKey = process.ProcessName
                 };
                 Items.Add(lvi);
             }

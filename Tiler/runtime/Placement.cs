@@ -5,14 +5,27 @@ namespace Tiler.runtime
 {
     public class Placement
     {
+        public static readonly Placement None = new Placement("None", 0, 0, 0, 1f, 1f);
         public static readonly Placement Left = new Placement("Left", 0, 0, 0, 0.33f, 1f);
+        public static readonly Placement Center = new Placement("Center", 0, .33f, 0, 0.33f, 1f);
+        public static readonly Placement Right = new Placement("Right", 0, .66f, 0, 0.33f, 1f);
+        public static readonly Placement LeftHalf = new Placement("Left Half", 0, 0, 0, 0.50f, 1f);
+        public static readonly Placement RightHalf = new Placement("Right Half", 0, .50f, 0, 0.50f, 1f);
+        public static readonly Placement LeftThird = new Placement("Left Third", 0, 0, 0.25f, 0.33f, 0.75f);
+        
 
         public static readonly Placement[] values =
         {
-            Left
+            None,
+            Left,
+            Center,
+            Right,
+            LeftHalf,
+            RightHalf,
+            LeftThird
         };
 
-        public Placement(string name, int desktop, float left, float top, float width, float height)
+        private Placement(string name, int desktop, float left, float top, float width, float height)
         {
             Desktop = desktop;
             Name = name;

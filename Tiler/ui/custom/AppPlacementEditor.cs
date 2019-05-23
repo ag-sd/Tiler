@@ -7,10 +7,17 @@ namespace Tiler.ui.custom
 {
     public class AppPlacementEditor : Panel
     {
+        private ProcessListItem _currentApplication;
         public AppPlacementEditor()
         {
-            BackColor = Color.Aquamarine;
             InitUi();
+        }
+
+        public void SetApplication(ProcessListItem applicationItem)
+        {
+            _cmbPlacement.SelectedItem = applicationItem.Placement;
+            _lblCaption.Text = applicationItem.Caption;
+            _currentApplication = applicationItem;
         }
 
         private void InitUi()
@@ -80,8 +87,10 @@ namespace Tiler.ui.custom
         {
             TextAlign = ContentAlignment.MiddleCenter, 
             Anchor = AnchorStyles.None, 
-            Dock = DockStyle.Fill
-            
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            AutoEllipsis = true
+
         };
         private readonly DesktopMap _desktopMap = new DesktopMap {Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
         private readonly ComboBox _cmbDesktopCount = new DesktopComboBox{Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
@@ -89,9 +98,10 @@ namespace Tiler.ui.custom
         
         private void CmbPlacement_SelectionChanged(object sender, EventArgs  e)
         {
-            if (_cmbPlacement.SelectedItem != null)
+            if (_cmbPlacement.SelectedItem != null && _currentApplication != null)
             {
-                _desktopMap.Placement = (Placement) _cmbPlacement.SelectedItem;
+                _currentApplication.Placement = (Placement) _cmbPlacement.SelectedItem;
+                _currentApplication.SavePlacement();
             }
         }
     }
