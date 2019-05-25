@@ -32,5 +32,14 @@ namespace Tiler.ui.custom
             DropDownStyle = ComboBoxStyle.DropDownList;
         }
         
+        public void SetItem(string desktop)
+        {
+            foreach (var item in Items)
+            {
+                if (!item.Equals(desktop)) continue;
+                SelectedItem = item;
+                return;
+            }
+        }
     }
 }

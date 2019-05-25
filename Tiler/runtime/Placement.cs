@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Tiler.runtime
 {
@@ -13,17 +15,23 @@ namespace Tiler.runtime
         public static readonly Placement RightHalf = new Placement("Right Half", 0, .50f, 0, 0.50f, 1f);
         public static readonly Placement LeftThird = new Placement("Left Third", 0, 0, 0.25f, 0.33f, 0.75f);
         
-
-        public static readonly Placement[] values =
+        private static readonly Dictionary<string, Placement> Placements = new Dictionary<string, Placement>()
         {
-            None,
-            Left,
-            Center,
-            Right,
-            LeftHalf,
-            RightHalf,
-            LeftThird
+            {"None", None},
+            {"Left", Left},
+            {"Center", Center},
+            {"Right", Right},
+            {"Left Half", LeftHalf},
+            {"Right Half", RightHalf},
+            {"Left Third", LeftThird}
         };
+
+        public static Placement ByKey(string key)
+        {
+            return Placements[key];
+        }
+
+        public static readonly IEnumerable<Placement> Values = Placements.Values;
 
         private Placement(string name, int desktop, float left, float top, float width, float height)
         {

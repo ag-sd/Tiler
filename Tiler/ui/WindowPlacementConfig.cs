@@ -1,5 +1,3 @@
-
-using System;
 using System.Windows.Forms;
 using Tiler.ui.custom;
 
@@ -7,29 +5,29 @@ namespace Tiler.ui
 {
     public partial class WindowPlacementConfig : Form
     {
-        private readonly ProcessListView _processListView;
-        private readonly AppPlacementEditor _appPlacementEditor;
+        private readonly ProcessListView _lvw;
+        private readonly AppPlacementEditor _editor;
         
         public WindowPlacementConfig()
         {
             InitializeComponent();
-
-            _appPlacementEditor = new AppPlacementEditor {Dock = DockStyle.Fill};
-            split.Panel2.Controls.Add(_appPlacementEditor);
-            
-            _processListView = new ProcessListView{Dock = DockStyle.Fill};
-            _processListView.ItemSelectionChanged += ProcessListView_ItemSelectionChanged;
-            split.Panel1.Controls.Add(_processListView);
+            _lvw = new ProcessListView(imageList1);
+            _editor = new AppPlacementEditor();
+            InitUi();
         }
-
-        private void ProcessListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void InitUi()
         {
-            if (e.IsSelected)
+            split.Panel1.Controls.Add(_lvw);
+            _lvw.Dock = DockStyle.Fill;
+            _lvw.ItemSelectionChanged += (sender, args) =>
             {
-                _appPlacementEditor.SetApplication((ProcessListItem) e.Item);
-            }
+                if (args.IsSelected && args.Item != null)
+                {
+                    var item = (ProcessListItem) args.Item;
+                    _editor.SetApplication(item);
+                }
+            };
+            split.Panel2.Controls.Add(_editor);
         }
-        
-        
     }
 }

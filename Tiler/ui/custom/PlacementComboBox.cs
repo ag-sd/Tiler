@@ -7,9 +7,21 @@ namespace Tiler.ui.custom
     {
         public PlacementComboBox()
         {
-            foreach (var placement in Placement.values)
+            foreach (var placement in Placement.Values)
             {
                 Items.Add(placement);
+            }
+
+            DropDownStyle = ComboBoxStyle.DropDownList;
+        }
+
+        public void SetItem(Placement placement)
+        {
+            foreach (var item in Items)
+            {
+                if (!placement.Equals(item)) continue;
+                SelectedItem = item;
+                return;
             }
         }
     }

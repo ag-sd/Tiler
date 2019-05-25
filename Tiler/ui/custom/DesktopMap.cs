@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Tiler.runtime;
@@ -37,6 +36,13 @@ namespace Tiler.ui.custom
             ResizeRedraw = true;
             Resize += OnResize;
             ConfigureWidthAndHeight();
+            InitUi();
+        }
+
+        private void InitUi()
+        {
+            BackColor = Color.LightGray;
+            BorderStyle = BorderStyle.FixedSingle;
         }
 
         private void ConfigureWidthAndHeight()
@@ -46,13 +52,13 @@ namespace Tiler.ui.custom
             var canvasRatio = (float)Width / (float)Height;
             if (screenRatio > canvasRatio)
             {
-                _sWIdth = Width;
-                _sHeight = scrSize.Height * Width / scrSize.Width;
+                _sWIdth = (int)(Width - Width * 0.05f);
+                _sHeight = scrSize.Height * _sWIdth / scrSize.Width;
             }
             else
             {
-                _sHeight = Height;
-                _sWIdth = scrSize.Width * Height / scrSize.Height;
+                _sHeight = (int)(Height - Height * 0.05f);
+                _sWIdth = scrSize.Width * _sHeight / scrSize.Height;
             }
         }
 
@@ -61,31 +67,40 @@ namespace Tiler.ui.custom
         {
             // Call the OnPaint method of the base class.  
             base.OnPaint(e);
-
+            
             // Draw the Placement object
-            DrawMap(e.Graphics, _placement, _sWIdth, _sHeight, _screen.DeviceName);
+            DrawMap(e.Graphics, _placement, _sWIdth, _sHeight, Width, Height, _screen.DeviceName);
         }
 
-        private void OnResize(object sender, System.EventArgs e)
+        private void OnResize(object sender, EventArgs e)
         {
             ConfigureWidthAndHeight();
         }
 
-        public static void DrawMap(Graphics graphics, Placement placement, int width, int height, string text = "")
+        public static void DrawMap(Graphics graphics, Placement placement, int sWidth, int sHeight, int gWidth, int gHeight, string text = "")
         {
+            var x = (gWidth - sWidth) / 2;
+            var y = (gHeight - sHeight) / 2;
+            
             if (placement != null)
             {
-                var location = placement.ResolveLocation(width, height);
-                var size = placement.ResolveSize(width, height);
+                var location = placement.ResolveLocation(sWidth, sHeight);
+                location.Offset(x, y);
+                var size = placement.ResolveSize(sWidth, sHeight);
                 // Draw the Placement object
-                using (var myPen = new SolidBrush(Color.Salmon))
+                using ( var pen = new Pen(Color.Red) )
+                using ( var brush = new SolidBrush(Color.Salmon) )
                 {
-                    graphics.FillRectangle(myPen, new Rectangle(location, size));
+                    var rectangle = new Rectangle(location, size);
+                    graphics.FillRectangle(brush, rectangle);
+                    graphics.DrawRectangle(pen, rectangle);
                 }
             }
             
-            // Draw the desktop border  
-            var rect = new Rectangle(2, 2, width -5, height - 5);
+            // Draw the desktop border 
+            var scrBorderLocation = new Point(x, y);
+            var scrBorderSize = new Size(sWidth, sHeight);
+            var rect = new Rectangle(scrBorderLocation, scrBorderSize);
             using (var screenBorderPen = new Pen(Color.Black, 5))  
             {
                 graphics.DrawRectangle(screenBorderPen, rect);  

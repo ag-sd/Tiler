@@ -14,7 +14,7 @@
         <Deterministic>true</Deterministic>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PlatformTarget>x86</PlatformTarget>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
@@ -22,15 +22,17 @@
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <Prefer32bit>false</Prefer32bit>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PlatformTarget>x86</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>bin\Release\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <Prefer32bit>false</Prefer32bit>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />
@@ -48,6 +50,7 @@
     <ItemGroup>
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="runtime\INISettings.cs" />
         <Compile Include="runtime\Placement.cs" />
         <Compile Include="runtime\TilerTasks.cs" />
         <Compile Include="runtime\WindowsShell.cs" />
@@ -55,6 +58,7 @@
         <Compile Include="ui\custom\AppPlacementEditor.cs" />
         <Compile Include="ui\custom\DesktopComboBox.cs" />
         <Compile Include="ui\custom\DesktopMap.cs" />
+        <Compile Include="ui\custom\FieldLabelPanel.cs" />
         <Compile Include="ui\custom\PlacementComboBox.cs" />
         <Compile Include="ui\custom\ProcessListView.cs" />
         <Compile Include="ui\MainIcon.cs" />

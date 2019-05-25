@@ -15,64 +15,30 @@ namespace Tiler.ui.custom
 
         public void SetApplication(ProcessListItem applicationItem)
         {
-            _cmbPlacement.SelectedItem = applicationItem.Placement;
-            _lblCaption.Text = applicationItem.Caption;
             _currentApplication = applicationItem;
+            _lblCaption.Text = applicationItem.Caption;
+            _desktopMap.Placement = applicationItem.Placement;
+            _cmbPlacement.SetItem(applicationItem.Placement);
+            _cmbDesktop.SetItem(applicationItem.Desktop);
         }
 
         private void InitUi()
         {
             SuspendLayout();
-            Margin = new Padding(5);
-
+            Margin = new Padding(10);
+            Padding = new Padding(10);
+            
             var layout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                ColumnCount = 3,
-                RowCount = 3,
-                ColumnStyles =
-                {
-                    new ColumnStyle(SizeType.Percent, 5),
-                    new ColumnStyle(SizeType.Percent, 90),
-                    new ColumnStyle(SizeType.Percent, 5)
-                },
-                RowStyles =
-                {
-                    new RowStyle(),
-                    new RowStyle(SizeType.Percent,80),
-                    new RowStyle()
-                }
+                ColumnStyles = {new ColumnStyle(SizeType.Percent, 100)},
+                RowStyles = { new RowStyle(SizeType.Percent, 10), new RowStyle(SizeType.Percent, 60)}
             };
             layout.SuspendLayout();
-            _lblCaption.Text = "Caption";
-            _lblCaption.Anchor = AnchorStyles.None;
-            _lblCaption.BackColor = Color.Azure;
-            layout.Controls.Add(_lblCaption, 1, 0);
-            layout.Controls.Add(_desktopMap, 1, 1);
-            
-            var cmbLayout = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 4,
-                RowCount = 1,
-                ColumnStyles = { 
-                    new ColumnStyle(),
-                    new ColumnStyle(SizeType.Percent, 50), 
-                    new ColumnStyle(),
-                    new ColumnStyle(SizeType.Percent, 50)
-                }
-            };
-            cmbLayout.Controls.Add(new Label{Text = "Placement", TextAlign = ContentAlignment.MiddleRight},0, 0);
-            cmbLayout.Controls.Add(_cmbPlacement, 1, 0);
-            cmbLayout.Controls.Add(new Label{Text = "Desktop", TextAlign = ContentAlignment.MiddleRight},2, 0);
-            cmbLayout.Controls.Add(_cmbDesktopCount, 3, 0);
-            
-            layout.Controls.Add(cmbLayout, 1, 2);
-            
-            foreach (var placement in Placement.values)
-            {
-                _cmbPlacement.Items.Add(placement);
-            }
+            layout.Controls.Add(_lblCaption, 0, 0);
+            layout.Controls.Add(_desktopMap, 0, 1);
+            layout.Controls.Add(new FieldLabelPanel(_cmbPlacement, "Placement"){Dock = DockStyle.Fill}, 0, 2);
+            layout.Controls.Add(new FieldLabelPanel(_cmbDesktop, "Desktop"){Dock = DockStyle.Fill}, 0, 3);
 
             _cmbPlacement.SelectedIndexChanged += CmbPlacement_SelectionChanged;
 
@@ -86,23 +52,24 @@ namespace Tiler.ui.custom
         private readonly Label _lblCaption = new Label
         {
             TextAlign = ContentAlignment.MiddleCenter, 
-            Anchor = AnchorStyles.None, 
+            Anchor = AnchorStyles.Top, 
             Dock = DockStyle.Fill,
-            AutoSize = true,
+            AutoSize = false,
             AutoEllipsis = true
-
         };
         private readonly DesktopMap _desktopMap = new DesktopMap {Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
-        private readonly ComboBox _cmbDesktopCount = new DesktopComboBox{Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
-        private readonly ComboBox _cmbPlacement = new ComboBox{Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
+        private readonly DesktopComboBox _cmbDesktop = new DesktopComboBox{Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
+        private readonly PlacementComboBox _cmbPlacement = new PlacementComboBox{Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
         
         private void CmbPlacement_SelectionChanged(object sender, EventArgs  e)
         {
-            if (_cmbPlacement.SelectedItem != null && _currentApplication != null)
-            {
-                _currentApplication.Placement = (Placement) _cmbPlacement.SelectedItem;
-                _currentApplication.SavePlacement();
-            }
+            if (_cmbPlacement.SelectedItem == null || _currentApplication == null) return;
+            if (_cmbPlacement.SelectedItem == _currentApplication.Placement) return;
+            
+            var placement = (Placement) _cmbPlacement.SelectedItem;
+            _currentApplication.Placement = placement;
+            _currentApplication.Desktop = _cmbDesktop.SelectedItem.ToString();
+            _desktopMap.Placement = placement;
         }
     }
 }

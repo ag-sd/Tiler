@@ -1,29 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Tiler.Properties;
 using Tiler.runtime;
 
 namespace Tiler.ui.custom
 {
     public class ProcessListItem : ListViewItem
     {
-        private class SavedPlacement
-        {
-            public Placement Placement { get; }
-            public string Desktop { get; }
-
-            public SavedPlacement(Placement placement, string desktop)
-            {
-                Placement = placement;
-                Desktop = desktop;
-            }
-        }
-        
-        private Placement _placement = Placement.None;
+        private Placement _placement;
         private string _desktop;
         
         public ProcessListItem(string name, string caption)
@@ -31,36 +17,16 @@ namespace Tiler.ui.custom
             Text = name;
             Caption = caption;
             // Check for a saved placement
-            if (Properties.Settings.Default == null)
-//            {
-//                Properties.Settings.Default.Properties.Add(new SettingsProperty());
-//                    //["placement"] = new Dictionary<string, SavedPlacement>()
-//            }
-            var props = (Dictionary<string, SavedPlacement>) Properties.Settings.Default["placement"];
-            if (props?[Text] == null)
-            {
-                SubItems.Add(new ListViewSubItem(this, string.Empty));
-                SubItems.Add(new ListViewSubItem(this, string.Empty));
-            }
-            else
-            {
-                var savedPlacement = props[Text];
-                _placement = savedPlacement.Placement;
-                SubItems.Add(new ListViewSubItem(this, savedPlacement.Placement.Name));
-                _desktop = savedPlacement.Desktop;
-                SubItems.Add(new ListViewSubItem(this, _desktop));
-            }
+            (_placement, _desktop) = INISettings.GetPlacement(name);
+            SubItems.Add(new ListViewSubItem(this, _placement.Name));
+            SubItems.Add(new ListViewSubItem(this, _desktop));
         }
 
-        public void SavePlacement()
+        private void SavePlacement()
         {
-            var dict = (Dictionary<string, SavedPlacement>) Properties.Settings.Default["placements"] ?? 
-                new Dictionary<string, SavedPlacement>();
-            dict[Text] = new SavedPlacement(_placement, _desktop);
-            Properties.Settings.Default["placements"] = dict;
-            Properties.Settings.Default.Save();
+            INISettings.SavePlacement(Text, _placement, _desktop);
         }
-        
+
         public string Caption { get; }
 
         public Placement Placement
@@ -69,31 +35,33 @@ namespace Tiler.ui.custom
             set
             {
                 _placement = value;
-                SubItems[0].Name = _placement.Name;
+                SubItems[1].Text = _placement.Name;
+                SavePlacement();
             }
         }
-        
+
         public string Desktop
         {
             get => _desktop;
             set
             {
                 _desktop = value;
-                SubItems[1].Name = value;
+                SubItems[2].Text = value;
+                SavePlacement();
             }
         }
     }
-    
+
     public class ProcessListView : ListView
     {
         private readonly ImageList _lvwImages;
-
-        public ProcessListView()
+        
+        public ProcessListView(ImageList imageList)
         {
-            _lvwImages = new ImageList();
+            _lvwImages = imageList;
 
             InitUi();
-            
+
             ShowProcesses();
         }
 
@@ -109,10 +77,9 @@ namespace Tiler.ui.custom
             Columns.Add("Placement", -2, HorizontalAlignment.Left);
             Columns.Add("Desktop", -2, HorizontalAlignment.Left);
             SmallImageList = _lvwImages;
-            Font = new Font("Segoe UI", 12f);
-            
+
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;
-            _lvwImages.ImageSize = new Size(32, 32);
+            _lvwImages.ImageSize = new Size(16, 16);
             _lvwImages.TransparentColor = Color.White;
         }
 
@@ -124,16 +91,23 @@ namespace Tiler.ui.custom
             {
                 if (process.MainWindowHandle == IntPtr.Zero || string.IsNullOrEmpty(process.MainWindowTitle)) continue;
 
-                _lvwImages.Images.Add(process.ProcessName, getProcessIcon(process));
-                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
+                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle);
+                var ico = GetProcessIcon(process);
+                if (ico == null)
                 {
-                    ImageKey = process.ProcessName
-                };
+                    lvi.ImageKey = "unknown_app_ico";
+                }
+                else
+                {
+                    _lvwImages.Images.Add(process.ProcessName, ico);
+                    lvi.ImageKey = process.ProcessName;
+
+                }
                 Items.Add(lvi);
             }
         }
 
-        private static Icon getProcessIcon(Process process)
+        private static Icon GetProcessIcon(Process process)
         {
             try
             {
@@ -145,7 +119,7 @@ namespace Tiler.ui.custom
                                 + process + " \n Exception is" + ex);
             }
 
-            return SystemIcons.Application;
+            return null;
         }
 
     }
