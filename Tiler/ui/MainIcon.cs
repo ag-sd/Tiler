@@ -1,7 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Tiler.Properties;
 
 namespace Tiler.ui
 {
@@ -18,7 +18,7 @@ namespace Tiler.ui
         {
             ni.MouseClick += ni_MouseClick;
             ni.Text = Application.ProductName;
-            ni.Icon = SystemIcons.Application;
+            ni.Icon = (Icon) Resources.ResourceManager.GetObject("app_16");
             ni.Visible = true;
             
             // Attach a context menu.

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using Tiler.ui;
-using Tiler.ui.custom;
 
 namespace Tiler
 {
@@ -15,19 +14,18 @@ namespace Tiler
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-//            using (MainIcon mi = new MainIcon())
+//            using (var mi = new MainIcon())
 //            {
 //                mi.Display();
 //                
 //                Application.Run();
 //            }
-//            new WindowPlacementConfig().Show();
 
 //            var form = new Form();
 //
 //            form.Controls.Add(new AppPlacementEditor{Dock = DockStyle.Fill});
 
-            Application.Run(new WindowPlacementConfig());
+            Application.Run(new PlacementConfig());
         }
     }
 }

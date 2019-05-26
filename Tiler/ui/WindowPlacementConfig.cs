@@ -11,7 +11,7 @@ namespace Tiler.ui
         public WindowPlacementConfig()
         {
             InitializeComponent();
-            _lvw = new ProcessListView(imageList1);
+            _lvw = new ProcessListView();
             _editor = new AppPlacementEditor();
             InitUi();
         }
@@ -28,6 +28,7 @@ namespace Tiler.ui
                 }
             };
             split.Panel2.Controls.Add(_editor);
+            _editor.Dock = DockStyle.Fill;
         }
     }
 }

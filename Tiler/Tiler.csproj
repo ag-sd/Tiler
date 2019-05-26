@@ -62,6 +62,12 @@
         <Compile Include="ui\custom\PlacementComboBox.cs" />
         <Compile Include="ui\custom\ProcessListView.cs" />
         <Compile Include="ui\MainIcon.cs" />
+        <Compile Include="ui\PlacementConfig.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="ui\PlacementConfig.Designer.cs">
+          <DependentUpon>PlacementConfig.cs</DependentUpon>
+        </Compile>
         <Compile Include="ui\WindowPlacementConfig.cs">
           <SubType>Form</SubType>
         </Compile>
@@ -77,6 +83,9 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
+        <EmbeddedResource Include="ui\PlacementConfig.resx">
+          <DependentUpon>PlacementConfig.cs</DependentUpon>
+        </EmbeddedResource>
         <EmbeddedResource Include="ui\WindowPlacementConfig.resx">
           <DependentUpon>WindowPlacementConfig.cs</DependentUpon>
         </EmbeddedResource>

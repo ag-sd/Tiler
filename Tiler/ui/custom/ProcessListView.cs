@@ -56,9 +56,9 @@ namespace Tiler.ui.custom
     {
         private readonly ImageList _lvwImages;
         
-        public ProcessListView(ImageList imageList)
+        public ProcessListView()
         {
-            _lvwImages = imageList;
+            _lvwImages = new ImageList();
 
             InitUi();
 
@@ -80,7 +80,7 @@ namespace Tiler.ui.custom
 
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;
             _lvwImages.ImageSize = new Size(16, 16);
-            _lvwImages.TransparentColor = Color.White;
+            _lvwImages.TransparentColor = Color.Black;
         }
 
         private void ShowProcesses()
@@ -91,18 +91,11 @@ namespace Tiler.ui.custom
             {
                 if (process.MainWindowHandle == IntPtr.Zero || string.IsNullOrEmpty(process.MainWindowTitle)) continue;
 
-                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle);
-                var ico = GetProcessIcon(process);
-                if (ico == null)
+                _lvwImages.Images.Add(process.ProcessName, GetProcessIcon(process));
+                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
                 {
-                    lvi.ImageKey = "unknown_app_ico";
-                }
-                else
-                {
-                    _lvwImages.Images.Add(process.ProcessName, ico);
-                    lvi.ImageKey = process.ProcessName;
-
-                }
+                    ImageKey = process.ProcessName
+                };
                 Items.Add(lvi);
             }
         }
@@ -119,7 +112,8 @@ namespace Tiler.ui.custom
                                 + process + " \n Exception is" + ex);
             }
 
-            return null;
+            return (Icon) Resources.ResourceManager.GetObject("app_unknown");
+            //return SystemIcons.Application;
         }
 
     }
