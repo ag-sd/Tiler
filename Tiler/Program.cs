@@ -4,7 +4,7 @@ using Tiler.ui;
 
 namespace Tiler
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -14,18 +14,18 @@ namespace Tiler
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-//            using (var mi = new MainIcon())
-//            {
-//                mi.Display();
-//                
-//                Application.Run();
-//            }
+            using (var mi = new MainIcon())
+            {
+                mi.Display();
+                
+                Application.Run();
+            }
 
 //            var form = new Form();
 //
 //            form.Controls.Add(new AppPlacementEditor{Dock = DockStyle.Fill});
 
-            Application.Run(new PlacementConfig());
+//            Application.Run(new PlacementConfig());
         }
     }
 }

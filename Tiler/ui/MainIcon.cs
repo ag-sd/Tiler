@@ -23,7 +23,6 @@ namespace Tiler.ui
             
             // Attach a context menu.
             ni.ContextMenuStrip = ContextMenus.Create();
-            
         }
 
         private static void ni_MouseClick(object sender, MouseEventArgs e)

@@ -77,6 +77,8 @@ namespace Tiler.ui.custom
             Columns.Add("Placement", -2, HorizontalAlignment.Left);
             Columns.Add("Desktop", -2, HorizontalAlignment.Left);
             SmallImageList = _lvwImages;
+            
+            BorderStyle = BorderStyle.None;
 
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;
             _lvwImages.ImageSize = new Size(16, 16);
@@ -113,7 +115,6 @@ namespace Tiler.ui.custom
             }
 
             return (Icon) Resources.ResourceManager.GetObject("app_unknown");
-            //return SystemIcons.Application;
         }
 
     }

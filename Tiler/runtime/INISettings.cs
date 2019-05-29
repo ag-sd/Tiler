@@ -66,7 +66,7 @@ namespace Tiler.runtime
             WritePrivateProfileString(section, key, value, iniFile.Value);
         }
         
-        private static string[] ReadKeyValuePairs(string section, string filePath)
+        private static IEnumerable<string> ReadKeyValuePairs(string section, string filePath)
         {
             var capacity = Capacity;
             while (true) 
@@ -77,7 +77,7 @@ namespace Tiler.runtime
                 if (size == 0) 
                 { 
                     Marshal.FreeCoTaskMem(returnedString); 
-                    return null; 
+                    return new string[]{}; 
                 } 
   
                 if (size < capacity - 2) 
@@ -89,7 +89,7 @@ namespace Tiler.runtime
                 } 
   
                 Marshal.FreeCoTaskMem(returnedString); 
-                capacity = capacity * 2; 
+                capacity *= 2; 
             } 
         }
         
