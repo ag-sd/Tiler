@@ -14,18 +14,15 @@ namespace Tiler
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            using (var mi = new MainIcon())
-            {
-                mi.Display();
-                
-                Application.Run();
-            }
+//            using (var mi = new MainIcon())
+//            {
+//                mi.Display();
+//                
+//                Application.Run();
+//            }
 
-//            var form = new Form();
-//
-//            form.Controls.Add(new AppPlacementEditor{Dock = DockStyle.Fill});
-
-//            Application.Run(new PlacementConfig());
+            var form = new SettingsDialog();
+            Application.Run(form);
         }
     }
 }

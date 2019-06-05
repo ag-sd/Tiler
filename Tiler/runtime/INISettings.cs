@@ -27,14 +27,14 @@ namespace Tiler.runtime
 
         public static (Placement, string) GetPlacement(string appName)
         {
-            var placement = Placement.ByKey(ReadValue(appName, "placement", "None"));
+            var placement = Placement.ByKey(ReadValue(appName, "region", "None"));
             var desktop = ReadValue(appName, "desktop", Screen.PrimaryScreen.DeviceName);
             return (placement, desktop);
         }
 
         public static void SavePlacement(string appName, Placement placement, string desktop)
         {
-            WriteValue(appName, "placement", placement.Name);
+            WriteValue(appName, "region", placement.Name);
             WriteValue(appName, "desktop", desktop);
         }
 
@@ -46,9 +46,9 @@ namespace Tiler.runtime
             {
                 var kvp = placementStr.Split('=');
                 var pParams = kvp[1].Split(',');
-                var placement = new Placement(pParams[0], 
-                    float.Parse(pParams[1]), float.Parse(pParams[2]), 
-                    float.Parse(pParams[3]), float.Parse(pParams[4]));
+                var placement = new Placement(kvp[0], 
+                    float.Parse(pParams[0]), float.Parse(pParams[1]), 
+                    float.Parse(pParams[2]), float.Parse(pParams[3]), true);
                 dict.Add(placement.Name, placement);
             }
             return dict;

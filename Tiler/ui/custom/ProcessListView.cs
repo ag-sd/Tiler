@@ -74,11 +74,9 @@ namespace Tiler.ui.custom
             GridLines = false;
             Sorting = SortOrder.Descending;
             Columns.Add("Process", -2, HorizontalAlignment.Left);
-            Columns.Add("Placement", -2, HorizontalAlignment.Left);
+            Columns.Add("Region", -2, HorizontalAlignment.Left);
             Columns.Add("Desktop", -2, HorizontalAlignment.Left);
             SmallImageList = _lvwImages;
-            
-            BorderStyle = BorderStyle.None;
 
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;
             _lvwImages.ImageSize = new Size(16, 16);

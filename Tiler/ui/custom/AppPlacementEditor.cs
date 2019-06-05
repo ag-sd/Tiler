@@ -37,7 +37,7 @@ namespace Tiler.ui.custom
             layout.SuspendLayout();
             layout.Controls.Add(_lblCaption, 0, 0);
             layout.Controls.Add(_desktopMap, 0, 1);
-            layout.Controls.Add(new FieldLabelPanel(_cmbPlacement, "Placement"){Dock = DockStyle.Fill}, 0, 2);
+            layout.Controls.Add(new FieldLabelPanel(_cmbPlacement, "Region"){Dock = DockStyle.Fill}, 0, 2);
             layout.Controls.Add(new FieldLabelPanel(_cmbDesktop, "Desktop"){Dock = DockStyle.Fill}, 0, 3);
 
             _cmbPlacement.SelectedIndexChanged += CmbPlacement_SelectionChanged;

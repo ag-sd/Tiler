@@ -10,7 +10,7 @@ namespace Tiler.ui.custom
         
         private Placement _placement;
         private Screen _screen;
-        private int _sWIdth;
+        private int _sWidth;
         private int _sHeight;
         
         public Placement Placement
@@ -52,13 +52,13 @@ namespace Tiler.ui.custom
             var canvasRatio = (float)Width / (float)Height;
             if (screenRatio > canvasRatio)
             {
-                _sWIdth = (int)(Width - Width * 0.05f);
-                _sHeight = scrSize.Height * _sWIdth / scrSize.Width;
+                _sWidth = (int)(Width - Width * 0.05f);
+                _sHeight = scrSize.Height * _sWidth / scrSize.Width;
             }
             else
             {
                 _sHeight = (int)(Height - Height * 0.05f);
-                _sWIdth = scrSize.Width * _sHeight / scrSize.Height;
+                _sWidth = scrSize.Width * _sHeight / scrSize.Height;
             }
         }
 
@@ -69,7 +69,7 @@ namespace Tiler.ui.custom
             base.OnPaint(e);
             
             // Draw the Placement object
-            DrawMap(e.Graphics, _placement, _sWIdth, _sHeight, Width, Height, _screen.DeviceName);
+            DrawMap(e.Graphics, _placement, _sWidth, _sHeight, Width, Height, _screen.DeviceName);
         }
 
         private void OnResize(object sender, EventArgs e)
