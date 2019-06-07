@@ -25,20 +25,13 @@ namespace Tiler.ui.custom
         private void InitUi()
         {
             SuspendLayout();
-            Margin = new Padding(10);
-            Padding = new Padding(10);
-            
-            var layout = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnStyles = {new ColumnStyle(SizeType.Percent, 100)},
-                RowStyles = { new RowStyle(SizeType.Percent, 10), new RowStyle(SizeType.Percent, 60)}
-            };
+
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill };
             layout.SuspendLayout();
             layout.Controls.Add(_lblCaption, 0, 0);
-            layout.Controls.Add(_desktopMap, 0, 1);
-            layout.Controls.Add(new FieldLabelPanel(_cmbPlacement, "Region"){Dock = DockStyle.Fill}, 0, 2);
-            layout.Controls.Add(new FieldLabelPanel(_cmbDesktop, "Desktop"){Dock = DockStyle.Fill}, 0, 3);
+            layout.Controls.Add(_desktopMap, 0, 3);
+            layout.Controls.Add(new FieldLabelPanel(_cmbPlacement, "Region"){Dock = DockStyle.Fill}, 0, 1);
+            layout.Controls.Add(new FieldLabelPanel(_cmbDesktop, "Desktop"){Dock = DockStyle.Fill}, 0, 2);
 
             _cmbPlacement.SelectedIndexChanged += CmbPlacement_SelectionChanged;
 
@@ -64,7 +57,7 @@ namespace Tiler.ui.custom
         private void CmbPlacement_SelectionChanged(object sender, EventArgs  e)
         {
             if (_cmbPlacement.SelectedItem == null || _currentApplication == null) return;
-            if (_cmbPlacement.SelectedItem == _currentApplication.Placement) return;
+            if ((Placement) _cmbPlacement.SelectedItem == _currentApplication.Placement) return;
             
             var placement = (Placement) _cmbPlacement.SelectedItem;
             _currentApplication.Placement = placement;

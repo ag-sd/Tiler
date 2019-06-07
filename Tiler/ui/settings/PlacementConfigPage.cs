@@ -1,5 +1,7 @@
+using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Tiler.Properties;
 using Tiler.runtime;
 using Tiler.ui.custom;
 
@@ -17,6 +19,7 @@ namespace Tiler.ui.settings
                 SubItems.Add(new ListViewSubItem(this, StringVal(Placement.TopPercent)));
                 SubItems.Add(new ListViewSubItem(this, StringVal(Placement.WidthPercent)));
                 SubItems.Add(new ListViewSubItem(this, StringVal(Placement.HeightPercent)));
+                SubItems.Add(new ListViewSubItem(this, Placement.IsCustom ? "Custom" : "Preset"));
             }
 
             public Placement Placement { get; }
@@ -38,13 +41,14 @@ namespace Tiler.ui.settings
                 FullRowSelect = true,
                 GridLines = false,
                 Sorting = SortOrder.Descending,
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
             };
             _lvw.Columns.Add("Name", -1, HorizontalAlignment.Left);
             _lvw.Columns.Add("X", -2, HorizontalAlignment.Left);
             _lvw.Columns.Add("Y", -2, HorizontalAlignment.Left);
             _lvw.Columns.Add("Width", -2, HorizontalAlignment.Left);
             _lvw.Columns.Add("Height", -2, HorizontalAlignment.Left);
+            _lvw.Columns.Add("Type", -2, HorizontalAlignment.Left);
             _lvw.ItemSelectionChanged += (sender, args) =>
             {
                 if (!args.IsSelected || args.Item == null) return;
@@ -57,7 +61,9 @@ namespace Tiler.ui.settings
             {
                 _lvw.Items.Add(new PlacementListItem(placement));
             }
-            
+
+            _lvw.Items[0].Selected = true;
+
             _split = new SplitContainer();
             InitUi();
         }
@@ -70,8 +76,7 @@ namespace Tiler.ui.settings
             _split.Dock = DockStyle.Fill;
             _split.Size = new Size(500, 273);
             _split.SplitterDistance = 275;
-            // This splitter moves in 10-pixel increments.
-           
+
             _split.SplitterWidth = 4;
             _split.FixedPanel = FixedPanel.Panel1;
             
@@ -81,6 +86,36 @@ namespace Tiler.ui.settings
             Controls.Add(_split);
             _split.ResumeLayout(false);
             ResumeLayout(false);
+
+            _editor.PlacementChangedEvent += (source, args) =>
+            { switch (args.ChangeType)
+                {
+                    case PlacementChangeType.None:
+                        break;
+                    case PlacementChangeType.Added:
+                        _lvw.Items.Add(new PlacementListItem(args.Placement));
+                        break;
+                    case PlacementChangeType.Updated:
+                        DeletePlacementFromListView(args.Placement);
+                        _lvw.Items.Add(new PlacementListItem(args.Placement));
+                        break;
+                    case PlacementChangeType.Deleted:
+                        DeletePlacementFromListView(args.Placement);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
+        }
+
+        private void DeletePlacementFromListView(Placement placement)
+        {
+            foreach (ListViewItem listViewItem in _lvw.Items)
+            {
+                if (!listViewItem.Text.Equals(placement.Name)) continue;
+                _lvw.Items.Remove(listViewItem);
+                return;
+            }
         }
     }
 }

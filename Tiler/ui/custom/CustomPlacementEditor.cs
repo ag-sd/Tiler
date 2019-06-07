@@ -6,8 +6,8 @@ namespace Tiler.ui.custom
 {
     public class CustomPlacementEditor : Panel
     {
+        public event PlacementChangedEvent PlacementChangedEvent;
         
-//        private Placement _currentPlacement;
         public CustomPlacementEditor()
         {
             InitUi();
@@ -15,7 +15,6 @@ namespace Tiler.ui.custom
         
         public void SetPlacement(Placement placement)
         {
-//            _currentPlacement = placement;
             _lblCaption.Text = placement.Name;
             _desktopMap.Placement = placement;
             _placementEntryPanel.Placement = placement;
@@ -37,6 +36,9 @@ namespace Tiler.ui.custom
             Controls.Add(layout);
             
             ResumeLayout();
+
+            _placementEntryPanel.PlacementChangedEvent += (source, args) => { _desktopMap.Placement = args.Placement; };
+            _placementEntryPanel.PlacementChangedEvent += (source, args) => { PlacementChangedEvent?.Invoke(this, args); };
         }
         
         private readonly Label _lblCaption = new Label
@@ -45,15 +47,11 @@ namespace Tiler.ui.custom
             Anchor = AnchorStyles.Top, 
             Dock = DockStyle.Fill,
             AutoSize = false,
-            AutoEllipsis = true,
-            BackColor = Color.LightSlateGray
+            AutoEllipsis = true
         };
         
         private readonly DesktopMap _desktopMap = new DesktopMap {Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
 
         private readonly PlacementEntryPanel _placementEntryPanel = new PlacementEntryPanel {Dock = DockStyle.Fill};
-
-
-
     }
 }

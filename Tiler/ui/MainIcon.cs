@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Tiler.Properties;
@@ -7,22 +9,22 @@ namespace Tiler.ui
 {
     public class MainIcon : IDisposable
     {
-        readonly NotifyIcon ni;
+        private readonly NotifyIcon _ni;
 
         public MainIcon()
         {
-            ni = new NotifyIcon();
+            _ni = new NotifyIcon();
         }
 
         public void Display()
         {
-            ni.MouseClick += ni_MouseClick;
-            ni.Text = Application.ProductName;
-            ni.Icon = (Icon) Resources.ResourceManager.GetObject("app_16");
-            ni.Visible = true;
+            _ni.MouseClick += ni_MouseClick;
+            _ni.Text = Application.ProductName;
+            _ni.Icon = (Icon) Resources.ResourceManager.GetObject("app_16");
+            _ni.Visible = true;
             
             // Attach a context menu.
-            ni.ContextMenuStrip = ContextMenus.Create();
+            _ni.ContextMenuStrip = ContextMenus.Create();
         }
 
         private static void ni_MouseClick(object sender, MouseEventArgs e)
@@ -37,7 +39,7 @@ namespace Tiler.ui
 
         public void Dispose()
         {
-            ni.Dispose();
+            _ni.Dispose();
         }
     }
 }

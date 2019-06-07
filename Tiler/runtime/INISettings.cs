@@ -1,24 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
 namespace Tiler.runtime
 {
-//    public class SavedPlacement
-//    {
-//        public Placement Placement { get; }
-//        public string Desktop { get; }
-//
-//        public SavedPlacement(Placement placement, string desktop)
-//        {
-//            Placement = placement;
-//            Desktop = desktop;
-//        }
-//    }
-    
+   
     public static class INISettings
     {
         private static readonly Lazy<string> iniFile = new Lazy<string>(() => Application.LocalUserAppDataPath + ".ini");
@@ -32,7 +20,17 @@ namespace Tiler.runtime
             return (placement, desktop);
         }
 
-        public static void SavePlacement(string appName, Placement placement, string desktop)
+        public static void SavePlacement(Placement placement)
+        {
+            WriteValue("Placements", placement.Name, placement.AsINISetting());
+        }
+
+        public static void DeletePlacement(Placement placement)
+        {
+            WriteValue("Placements", placement.Name, null);
+        }
+
+        public static void SaveAppPlacement(string appName, Placement placement, string desktop)
         {
             WriteValue(appName, "region", placement.Name);
             WriteValue(appName, "desktop", desktop);

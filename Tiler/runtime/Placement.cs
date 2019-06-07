@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Tiler.runtime
 {
-    public class Placement
+    public class Placement : IEquatable<Placement>
     {
         public static readonly Placement None = new Placement("None", 0, 0, 1f, 1f, false);
         
@@ -52,9 +52,62 @@ namespace Tiler.runtime
         }
 
         public override string ToString() => Name;
-//        {
-//            return Name;
-//        }
+
+        public bool SizeMatches(Placement other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return new RectangleF(LeftPercent, TopPercent, WidthPercent, HeightPercent)
+                .Equals(new RectangleF(other.LeftPercent, other.TopPercent, other.WidthPercent, other.HeightPercent));
+        }
+
+        public bool Equals(Placement other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Name, other.Name) && 
+                   LeftPercent.Equals(other.LeftPercent) && 
+                   TopPercent.Equals(other.TopPercent) && 
+                   WidthPercent.Equals(other.WidthPercent) && 
+                   HeightPercent.Equals(other.HeightPercent) && 
+                   IsCustom == other.IsCustom;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Placement) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ LeftPercent.GetHashCode();
+                hashCode = (hashCode * 397) ^ TopPercent.GetHashCode();
+                hashCode = (hashCode * 397) ^ WidthPercent.GetHashCode();
+                hashCode = (hashCode * 397) ^ HeightPercent.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsCustom.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Placement left, Placement right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Placement left, Placement right)
+        {
+            return !Equals(left, right);
+        }
+
+        public string AsINISetting() =>
+            $"{LeftPercent},{TopPercent},{WidthPercent},{HeightPercent}";
+
 
         public string Name { get; }
 

@@ -24,7 +24,7 @@ namespace Tiler.ui.custom
 
         private void SavePlacement()
         {
-            INISettings.SavePlacement(Text, _placement, _desktop);
+            INISettings.SaveAppPlacement(Text, _placement, _desktop);
         }
 
         public string Caption { get; }

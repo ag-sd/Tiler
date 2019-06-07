@@ -33,7 +33,6 @@ namespace Tiler.ui.custom
         public DesktopMap()
         {
             _screen = Screen.PrimaryScreen;
-            ResizeRedraw = true;
             Resize += OnResize;
             ConfigureWidthAndHeight();
             InitUi();
@@ -43,6 +42,8 @@ namespace Tiler.ui.custom
         {
             BackColor = Color.LightGray;
             BorderStyle = BorderStyle.FixedSingle;
+            DoubleBuffered = true;
+            ResizeRedraw = true;
         }
 
         private void ConfigureWidthAndHeight()
