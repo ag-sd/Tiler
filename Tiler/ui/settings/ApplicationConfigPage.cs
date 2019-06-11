@@ -4,16 +4,16 @@ using Tiler.ui.custom;
 
 namespace Tiler.ui.settings
 {
-    public class AppPlacementConfigPage : UserControl
+    public class ApplicationConfigPage : UserControl
     {
         private readonly ProcessListView _lvw;
-        private readonly AppPlacementEditor _editor;
+        private readonly ApplicationEditor _editor;
         private readonly SplitContainer _split;
 
-        public AppPlacementConfigPage()
+        public ApplicationConfigPage()
         {
             _lvw = new ProcessListView();
-            _editor = new AppPlacementEditor();
+            _editor = new ApplicationEditor();
             _split = new SplitContainer();
             InitUi();
         }

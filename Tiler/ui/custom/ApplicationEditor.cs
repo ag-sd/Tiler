@@ -5,10 +5,10 @@ using Tiler.runtime;
 
 namespace Tiler.ui.custom
 {
-    public class AppPlacementEditor : Panel
+    public class ApplicationEditor : Panel
     {
         private ProcessListItem _currentApplication;
-        public AppPlacementEditor()
+        public ApplicationEditor()
         {
             InitUi();
         }

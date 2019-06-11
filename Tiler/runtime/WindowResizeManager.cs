@@ -7,13 +7,34 @@ using System.Windows.Forms;
 
 namespace Tiler.runtime
 {
-    internal static class TilerTasks
+    public delegate void WindowResizedEvent(object source, EventArgs e);
+
+    
+    public class WindowResizeManager
     {
-        public static void ReArrangeWindows()
+        public event WindowResizedEvent WindowResizedEvent;
+        private bool _activeMode;
+
+        public WindowResizeManager()
+        {
+            Program.ProcessMonitor.ProcessesAddedEvent += ProcessMonitorOnProcessesAddedEvent;
+        }
+
+        public bool ActiveMode
+        {
+            get => _activeMode;
+            set
+            {
+                _activeMode = value;
+                if (value) ReArrangeWindows();
+            }
+        }
+
+        public void ReArrangeWindows(HashSet<string> processNames = null)
         {
             // Get current applications
             var dictionary = WindowsShell.GetWindowsByProcessId();
-            var allProcesses = Process.GetProcesses();
+            var allProcesses = Program.ProcessMonitor.GetProcesses();
             // Force to primary display for now
             var scrRects = Screen.AllScreens.ToDictionary(screen => screen.DeviceName, screen => screen.WorkingArea);
             Debug.WriteLine("ALL Working Areas = " + scrRects);
@@ -21,6 +42,8 @@ namespace Tiler.runtime
             foreach (var process in allProcesses)
             {
                 if (!dictionary.ContainsKey(process.Id)) continue;
+                if (processNames != null && !processNames.Contains(process.ProcessName)) continue;
+                
                 // Check if there is a saved placement
                 var (placement, desktop) = INISettings.GetPlacement(process.ProcessName);
 
@@ -41,6 +64,13 @@ namespace Tiler.runtime
                 
                 AdjustWindows(scrRect, placement, dictionary[process.Id]);
             }
+            
+            WindowResizedEvent?.Invoke(this, new EventArgs());
+        }
+        
+        private void ProcessMonitorOnProcessesAddedEvent(object source, ProcessChangedEventArgs e)
+        {
+            ReArrangeWindows(e.Processes.Keys.ToHashSet());
         }
 
         private static void AdjustWindows(Rectangle screenRect, Placement placement, IEnumerable<IntPtr> windowHandles)

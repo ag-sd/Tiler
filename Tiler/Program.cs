@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
+using Tiler.runtime;
 using Tiler.ui;
 
 namespace Tiler
 {
     internal static class Program
     {
+        public static readonly ProcessMonitor ProcessMonitor = new ProcessMonitor();
+        
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -14,15 +17,18 @@ namespace Tiler
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-//            using (var mi = new MainIcon())
-//            {
-//                mi.Display();
-//                
-//                Application.Run();
-//            }
+            
+            ProcessMonitor.Start();
+            using (var mi = new MainIcon())
+            {
+                mi.Display();
+                
+                Application.Run();
+            }
+            
 
-            var form = new SettingsDialog();
-            Application.Run(form);
+//            var form = new SettingsDialog();
+//            Application.Run(form);
         }
     }
 }

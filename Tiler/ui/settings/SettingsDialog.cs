@@ -12,7 +12,7 @@ namespace Tiler.ui
         private readonly ToolStrip _tb;
         private readonly Panel _container;
 
-        private readonly AppPlacementConfigPage _appPlacementConfigPage;
+        private readonly ApplicationConfigPage _applicationConfigPage;
         private readonly PlacementConfigPage _placementConfigPage;
         
         public SettingsDialog()
@@ -20,8 +20,9 @@ namespace Tiler.ui
             InitializeComponent();
             _tb = new ToolStrip{Dock = DockStyle.Top, BackColor = SystemColors.Window};
             _container = new Panel {Dock = DockStyle.Fill};
-            _appPlacementConfigPage = new AppPlacementConfigPage{Dock = DockStyle.Fill};
+            _applicationConfigPage = new ApplicationConfigPage{Dock = DockStyle.Fill};
             _placementConfigPage = new PlacementConfigPage {Dock = DockStyle.Fill};
+            Icon = (Icon) Resources.ResourceManager.GetObject("app_tiler");
             
             InitToolBar();
             InitUi();
@@ -51,7 +52,7 @@ namespace Tiler.ui
                 (sender, args) => {_container.Controls.Clear(); })
                 {Alignment = ToolStripItemAlignment.Right, Tag = "Configure Tiler"};
             var tsbAppPlacements = new ToolStripButton(string.Empty, (Bitmap) Resources.ResourceManager.GetObject("tb_app_placements_png"),
-                (sender, args) =>  SwapControl(_container, _appPlacementConfigPage))
+                (sender, args) =>  SwapControl(_container, _applicationConfigPage))
                 {Alignment = ToolStripItemAlignment.Right, Tag = "Configure Applications"};
             var tsbPlacements = new ToolStripButton(string.Empty, (Bitmap) Resources.ResourceManager.GetObject("tb_placements_png"),
                 (sender, args) => SwapControl(_container, _placementConfigPage))

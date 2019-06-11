@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -81,22 +82,75 @@ namespace Tiler.ui.custom
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;
             _lvwImages.ImageSize = new Size(16, 16);
             _lvwImages.TransparentColor = Color.Black;
+            
+            Program.ProcessMonitor.ProcessesAddedEvent += ProcessMonitorOnProcessesAddedEvent;
+            Program.ProcessMonitor.ProcessesRemovedEvent += ProcessMonitorOnProcessesRemovedEvent;
+        }
+
+        private void ProcessMonitorOnProcessesRemovedEvent(object source, ProcessChangedEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke( ( MethodInvoker ) delegate { RemoveItems(e.Processes); });
+            }
+            else
+            {
+                RemoveItems(e.Processes);
+            }
+        }
+
+        private void ProcessMonitorOnProcessesAddedEvent(object source, ProcessChangedEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke( ( MethodInvoker ) delegate { AddItems(e.Processes); });
+            }
+            else
+            {
+                AddItems(e.Processes);
+            }
+        }
+
+        private void AddItems(IReadOnlyDictionary<string, Process> processes)
+        {
+            BeginUpdate();
+            foreach (var key in processes.Keys)
+            {
+                AddListViewItem(processes[key]);
+            }
+            EndUpdate();
+        }
+
+        private void RemoveItems(IReadOnlyDictionary<string, Process> processes)
+        {
+            BeginUpdate();
+            foreach (ProcessListItem item in Items)
+            {
+                if(!processes.ContainsKey(item.Text)) continue;
+                Items.Remove(item);
+            }
+            EndUpdate();
+        }
+
+        private void AddListViewItem(Process process)
+        {
+            _lvwImages.Images.Add(process.ProcessName, GetProcessIcon(process));
+            var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
+            {
+                ImageKey = process.ProcessName
+            };
+            Items.Add(lvi);
         }
 
         private void ShowProcesses()
         {
-            var allProcesses = Process.GetProcesses();
+            var allProcesses = Program.ProcessMonitor.GetProcesses();//Process.GetProcesses();
 
             foreach (var process in allProcesses)
             {
                 if (process.MainWindowHandle == IntPtr.Zero || string.IsNullOrEmpty(process.MainWindowTitle)) continue;
 
-                _lvwImages.Images.Add(process.ProcessName, GetProcessIcon(process));
-                var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
-                {
-                    ImageKey = process.ProcessName
-                };
-                Items.Add(lvi);
+                AddListViewItem(process);
             }
         }
 
