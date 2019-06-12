@@ -1,18 +1,23 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using log4net;
 using Tiler.Properties;
 using Tiler.runtime;
+using Tiler.ui.settings;
 
 namespace Tiler.ui
 {
-    public class MainIcon : IDisposable
+    public class AppIcon : IDisposable
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private readonly NotifyIcon _ni;
         private readonly SettingsDialog _settingsDialog;
         private readonly WindowResizeManager _resizeManager;
 
-        public MainIcon()
+        public AppIcon()
         {
             _ni = new NotifyIcon();
             _settingsDialog = new SettingsDialog();
@@ -36,7 +41,7 @@ namespace Tiler.ui
             // Handle mouse button clicks.
             if (e.Button == MouseButtons.Left && !_settingsDialog.Visible)
             {
-                // Start Windows Explorer.
+                log.Info("Launching settings dialog");
                 _settingsDialog.ShowDialog();
             }
         }
@@ -76,6 +81,7 @@ namespace Tiler.ui
             var btn = (ToolStripMenuItem) sender;
             btn.Checked = !btn.Checked;
             _resizeManager.ActiveMode = btn.Checked;
+            log.Info("ResizeManager Active mode set to " + btn.Checked);
         }
 
         /// <summary>
@@ -110,6 +116,7 @@ namespace Tiler.ui
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private static void Exit_Click(object sender, EventArgs e)
         {
+            log.Info("Exiting application ");
             // Quit without further ado.
             Application.Exit();
         }
@@ -117,6 +124,7 @@ namespace Tiler.ui
         public void Dispose()
         {
             _ni.Dispose();
+            _settingsDialog.Dispose();
         }
     }
 }

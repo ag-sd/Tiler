@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Tiler.Properties;
-using Tiler.ui.settings;
 
-namespace Tiler.ui
+namespace Tiler.ui.settings
 {
     public partial class SettingsDialog : Form
     {

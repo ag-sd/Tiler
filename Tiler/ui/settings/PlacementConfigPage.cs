@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Tiler.Properties;
+using log4net;
 using Tiler.runtime;
 using Tiler.ui.custom;
 
@@ -9,6 +9,9 @@ namespace Tiler.ui.settings
 {
     public class PlacementConfigPage : UserControl
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private class PlacementListItem : ListViewItem
         {
             public PlacementListItem(Placement placement)
@@ -53,6 +56,7 @@ namespace Tiler.ui.settings
             {
                 if (!args.IsSelected || args.Item == null) return;
                 var item = (PlacementListItem) args.Item;
+                log.Info("Placement selected " + item.Placement);
                 _editor.SetPlacement(item.Placement);
             };
 
@@ -88,7 +92,11 @@ namespace Tiler.ui.settings
             ResumeLayout(false);
 
             _editor.PlacementChangedEvent += (source, args) =>
-            { switch (args.ChangeType)
+            {
+                if(!PlacementChangeType.None.Equals(args.ChangeType)) log.Info(
+                    $"Placement Editing completed. Action was {args.ChangeType}. Placement affected was {args.Placement}");
+                
+                switch (args.ChangeType)
                 {
                     case PlacementChangeType.None:
                         break;

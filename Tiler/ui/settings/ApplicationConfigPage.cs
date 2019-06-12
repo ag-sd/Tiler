@@ -1,11 +1,15 @@
 using System.Drawing;
 using System.Windows.Forms;
+using log4net;
 using Tiler.ui.custom;
 
 namespace Tiler.ui.settings
 {
     public class ApplicationConfigPage : UserControl
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private readonly ProcessListView _lvw;
         private readonly ApplicationEditor _editor;
         private readonly SplitContainer _split;
@@ -32,6 +36,7 @@ namespace Tiler.ui.settings
             {
                 if (!args.IsSelected || args.Item == null) return;
                 var item = (ProcessListItem) args.Item;
+                log.Info($"Application selected was {item.Caption} with placement of {item.Placement} on desktop {item.Desktop}");
                 _editor.SetApplication(item);
             };
             

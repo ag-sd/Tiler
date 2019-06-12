@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using log4net;
 
 namespace Tiler.runtime
 {
    
     public static class INISettings
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private static readonly Lazy<string> iniFile = new Lazy<string>(() => Application.LocalUserAppDataPath + ".ini");
         
         private const int Capacity = 512;
 
-        public static (Placement, string) GetPlacement(string appName)
+        public static (Placement, string) GetAppPlacement(string appName)
         {
             var placement = Placement.ByKey(ReadValue(appName, "region", "None"));
             var desktop = ReadValue(appName, "desktop", Screen.PrimaryScreen.DeviceName);
+            if (Placement.None != placement)
+            {
+                log.Info($"Found saved placement {placement} for {appName} on desktop {desktop}");
+            }
             return (placement, desktop);
         }
 
@@ -47,6 +55,7 @@ namespace Tiler.runtime
                 var placement = new Placement(kvp[0], 
                     float.Parse(pParams[0]), float.Parse(pParams[1]), 
                     float.Parse(pParams[2]), float.Parse(pParams[3]), true);
+                log.Info($"Found custom placement {placement}");
                 dict.Add(placement.Name, placement);
             }
             return dict;

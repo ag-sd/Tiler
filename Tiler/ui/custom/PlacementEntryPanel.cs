@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using log4net;
 using Tiler.Properties;
 using Tiler.runtime;
 
@@ -29,6 +30,9 @@ namespace Tiler.ui.custom
         
     public class PlacementEntryPanel : Panel
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private Placement _placement;
 
         public event PlacementChangedEvent PlacementChangedEvent;
@@ -93,6 +97,7 @@ namespace Tiler.ui.custom
         {
             var newPlacement = GetPlacement();
             var changeType = (PlacementChangeType) ((ToolStripButton) sender).Tag;
+            log.Info($"User triggered {changeType} for placement {newPlacement}");
             switch (changeType)
             {
                 case PlacementChangeType.Added:

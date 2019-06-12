@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using log4net;
 using Tiler.Properties;
 using Tiler.runtime;
 
@@ -18,7 +19,7 @@ namespace Tiler.ui.custom
             Text = name;
             Caption = caption;
             // Check for a saved placement
-            (_placement, _desktop) = INISettings.GetPlacement(name);
+            (_placement, _desktop) = INISettings.GetAppPlacement(name);
             SubItems.Add(new ListViewSubItem(this, _placement.Name));
             SubItems.Add(new ListViewSubItem(this, _desktop));
         }
@@ -55,6 +56,9 @@ namespace Tiler.ui.custom
 
     public class ProcessListView : ListView
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private readonly ImageList _lvwImages;
         
         public ProcessListView()
@@ -116,6 +120,7 @@ namespace Tiler.ui.custom
             BeginUpdate();
             foreach (var key in processes.Keys)
             {
+                log.Info($"Adding {key} to list");
                 AddListViewItem(processes[key]);
             }
             EndUpdate();
@@ -127,6 +132,7 @@ namespace Tiler.ui.custom
             foreach (ProcessListItem item in Items)
             {
                 if(!processes.ContainsKey(item.Text)) continue;
+                log.Info($"Removing {item.Text} from list");
                 Items.Remove(item);
             }
             EndUpdate();
@@ -139,12 +145,12 @@ namespace Tiler.ui.custom
             {
                 ImageKey = process.ProcessName
             };
-            Items.Add(lvi);
+            Items.Insert(Items.Count, lvi);
         }
 
         private void ShowProcesses()
         {
-            var allProcesses = Program.ProcessMonitor.GetProcesses();//Process.GetProcesses();
+            var allProcesses = Program.ProcessMonitor.GetProcesses();
 
             foreach (var process in allProcesses)
             {
@@ -162,6 +168,7 @@ namespace Tiler.ui.custom
             }
             catch (Exception ex)
             {
+                log.Error($"Could not extract the icon for process {process.ProcessName}. A default will be used");
                 Debug.WriteLine("An error occured while extracting application icon process=" 
                                 + process + " \n Exception is" + ex);
             }

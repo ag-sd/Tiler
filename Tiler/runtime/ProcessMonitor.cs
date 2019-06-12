@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using log4net;
 
 namespace Tiler.runtime
 {
@@ -22,6 +23,9 @@ namespace Tiler.runtime
     
     public class ProcessMonitor
     {
+        private static readonly ILog log = 
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         private readonly Timer _systemMonitorTimer;
         private Dictionary<string, Process> _processList;
 
@@ -41,7 +45,6 @@ namespace Tiler.runtime
 
         private void SystemMonitorTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
             ManageProcesses();
         }
 
@@ -59,9 +62,18 @@ namespace Tiler.runtime
             var removedEventArgs = removedProcessKeys.Count > 0 ? createArgs(removedProcessKeys, _processList) : null;
             
             _processList = windowedProcesses;
-            
-            if (addedEventArgs != null) ProcessesAddedEvent?.Invoke(this, addedEventArgs);
-            if (removedEventArgs != null) ProcessesRemovedEvent?.Invoke(this, removedEventArgs);
+
+            if (addedEventArgs != null)
+            {
+                log.Info("Detected processes were added. Raising event...");
+                ProcessesAddedEvent?.Invoke(this, addedEventArgs);
+            }
+
+            if (removedEventArgs != null)
+            {
+                log.Info("Detected processes were removed. Raising event...");
+                ProcessesRemovedEvent?.Invoke(this, removedEventArgs);
+            }
         }
         
         private static ProcessChangedEventArgs createArgs(IEnumerable<string> keys, IReadOnlyDictionary<string, Process> refDict)

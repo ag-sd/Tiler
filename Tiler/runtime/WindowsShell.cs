@@ -149,8 +149,8 @@ namespace Tiler.runtime
             public override string ToString()
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Flags = " + Flags)
-                  .AppendLine("NormalPosition = " + NormalPosition);
+                sb.Append("Flags = " + Flags)
+                  .Append("; NormalPosition = " + NormalPosition);
                 return sb.ToString();
             }
         }

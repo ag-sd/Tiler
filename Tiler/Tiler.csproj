@@ -35,6 +35,10 @@
         <Prefer32bit>false</Prefer32bit>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+          <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Xml.Linq" />
@@ -55,8 +59,6 @@
         <Compile Include="runtime\ProcessMonitor.cs" />
         <Compile Include="runtime\WindowResizeManager.cs" />
         <Compile Include="runtime\WindowsShell.cs" />
-        <Compile Include="test.cs" />
-        <Compile Include="ui\ContextMenus.cs" />
         <Compile Include="ui\custom\ApplicationEditor.cs" />
         <Compile Include="ui\custom\CustomPlacementEditor.cs" />
         <Compile Include="ui\custom\DesktopComboBox.cs" />
@@ -65,7 +67,7 @@
         <Compile Include="ui\custom\PlacementComboBox.cs" />
         <Compile Include="ui\custom\PlacementEntryPanel.cs" />
         <Compile Include="ui\custom\ProcessListView.cs" />
-        <Compile Include="ui\MainIcon.cs" />
+        <Compile Include="ui\AppIcon.cs" />
         <Compile Include="ui\settings\PlacementConfigPage.cs" />
         <Compile Include="ui\settings\SettingsDialog.cs">
           <SubType>Form</SubType>
@@ -86,6 +88,7 @@
         <EmbeddedResource Include="ui\settings\SettingsDialog.resx">
           <DependentUpon>SettingsDialog.cs</DependentUpon>
         </EmbeddedResource>
+        <None Include="packages.config" />
         <None Include="Properties\Settings.settings">
             <Generator>SettingsSingleFileGenerator</Generator>
             <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -101,6 +104,9 @@
     </ItemGroup>
     <ItemGroup>
       <Content Include="assets\window_organizer.ps1" />
+      <Content Include="log4net.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Readme.md" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
