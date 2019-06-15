@@ -13,9 +13,9 @@ namespace Tiler.runtime
     
     public class ProcessChangedEventArgs : EventArgs
     {
-        public Dictionary<string, Process> Processes { get; }
+        public ISet<int> Processes { get; }
 
-        public ProcessChangedEventArgs(Dictionary<string, Process> processes)
+        public ProcessChangedEventArgs(ISet<int> processes)
         {
             Processes = processes;
         }
@@ -27,14 +27,14 @@ namespace Tiler.runtime
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         
         private readonly Timer _systemMonitorTimer;
-        private Dictionary<string, Process> _processList;
+        private ISet<int> _processSet;
 
         public event ProcessesAddedEvent ProcessesAddedEvent;
         public event ProcessesRemovedEvent ProcessesRemovedEvent;
 
         public ProcessMonitor()
         {
-            _processList = new Dictionary<string, Process>();
+            _processSet = new HashSet<int>();
             _systemMonitorTimer = new Timer
             {
                 Interval = 1000,
@@ -50,36 +50,28 @@ namespace Tiler.runtime
 
         private void ManageProcesses()
         {
-            var allProcesses = Process.GetProcesses();
-            var windowedProcesses = 
-                allProcesses.Where(process => process.MainWindowHandle != IntPtr.Zero && !string.IsNullOrEmpty(process.MainWindowTitle))
-                    .ToDictionary(process => process.ProcessName);
-
-            var removedProcessKeys = _processList.Keys.Except(windowedProcesses.Keys).ToList();
-            var addedProcessKeys = windowedProcesses.Keys.Except(_processList.Keys).ToList();
-
-            var addedEventArgs = addedProcessKeys.Count > 0 ? createArgs(addedProcessKeys, windowedProcesses) : null;
-            var removedEventArgs = removedProcessKeys.Count > 0 ? createArgs(removedProcessKeys, _processList) : null;
+            var windowedProcesses = WindowsShell.GetWindowsByProcessId();
             
-            _processList = windowedProcesses;
+            //log.Debug("Processes found were " + string.Join(", ", windowedProcesses.Keys));
+            var removedProcessKeys = _processSet.Except(windowedProcesses.Keys).ToHashSet();
+            var addedProcessKeys = windowedProcesses.Keys.Except(_processSet).ToHashSet();
+
+            var addedEventArgs = addedProcessKeys.Count > 0 ? new ProcessChangedEventArgs(addedProcessKeys) : null;
+            var removedEventArgs = removedProcessKeys.Count > 0 ? new ProcessChangedEventArgs(removedProcessKeys) : null;
+            
+            _processSet = windowedProcesses.Keys.ToHashSet();
 
             if (addedEventArgs != null)
             {
-                log.Info("Detected processes were added. Raising event...");
+                log.Info("System detected that processes were added. Raising event...");
                 ProcessesAddedEvent?.Invoke(this, addedEventArgs);
             }
 
             if (removedEventArgs != null)
             {
-                log.Info("Detected processes were removed. Raising event...");
+                log.Info("System detected that processes were removed. Raising event...");
                 ProcessesRemovedEvent?.Invoke(this, removedEventArgs);
             }
-        }
-        
-        private static ProcessChangedEventArgs createArgs(IEnumerable<string> keys, IReadOnlyDictionary<string, Process> refDict)
-        {
-            var dict = keys.ToDictionary(key => key, key => refDict[key]);
-            return new ProcessChangedEventArgs(dict);
         }
 
         public void Start()
@@ -90,6 +82,6 @@ namespace Tiler.runtime
 
         public void Stop() => _systemMonitorTimer.Enabled = false;
         
-        public IEnumerable<Process> GetProcesses() => new HashSet<Process>(_processList.Values);
+        public IEnumerable<int> GetProcessIds() => new HashSet<int>(_processSet);
     }
 }

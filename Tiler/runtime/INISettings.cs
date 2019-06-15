@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -12,8 +13,10 @@ namespace Tiler.runtime
     {
         private static readonly ILog log = 
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
-        private static readonly Lazy<string> iniFile = new Lazy<string>(() => Application.LocalUserAppDataPath + ".ini");
+
+        private static readonly Lazy<string> iniFile = new Lazy<string>(() => 
+            Path.GetDirectoryName(Application.ExecutablePath) +
+            Path.DirectorySeparatorChar + Application.ProductName + ".ini");
         
         private const int Capacity = 512;
 

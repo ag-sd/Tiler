@@ -64,10 +64,12 @@
         <Compile Include="ui\custom\DesktopComboBox.cs" />
         <Compile Include="ui\custom\DesktopMap.cs" />
         <Compile Include="ui\custom\FieldLabelPanel.cs" />
+        <Compile Include="ui\custom\LogDisplayListView.cs" />
         <Compile Include="ui\custom\PlacementComboBox.cs" />
         <Compile Include="ui\custom\PlacementEntryPanel.cs" />
         <Compile Include="ui\custom\ProcessListView.cs" />
         <Compile Include="ui\AppIcon.cs" />
+        <Compile Include="ui\settings\GeneralSettingsPage.cs" />
         <Compile Include="ui\settings\PlacementConfigPage.cs" />
         <Compile Include="ui\settings\SettingsDialog.cs">
           <SubType>Form</SubType>

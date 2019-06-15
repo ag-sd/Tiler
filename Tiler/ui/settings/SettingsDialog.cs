@@ -13,6 +13,7 @@ namespace Tiler.ui.settings
 
         private readonly ApplicationConfigPage _applicationConfigPage;
         private readonly PlacementConfigPage _placementConfigPage;
+        private readonly GeneralSettingsPage _generalSettingsPage;
         
         public SettingsDialog()
         {
@@ -21,6 +22,7 @@ namespace Tiler.ui.settings
             _container = new Panel {Dock = DockStyle.Fill};
             _applicationConfigPage = new ApplicationConfigPage{Dock = DockStyle.Fill};
             _placementConfigPage = new PlacementConfigPage {Dock = DockStyle.Fill};
+            _generalSettingsPage = new GeneralSettingsPage {Dock = DockStyle.Fill};
             Icon = (Icon) Resources.ResourceManager.GetObject("app_tiler");
             
             InitToolBar();
@@ -48,7 +50,7 @@ namespace Tiler.ui.settings
             _tb.ImageScalingSize = new Size(48,48);
 
             var tsbSettings = new ToolStripButton(string.Empty, (Bitmap) Resources.ResourceManager.GetObject("tb_settings_png"), 
-                (sender, args) => {_container.Controls.Clear(); })
+                (sender, args) => SwapControl(_container, _generalSettingsPage))
                 {Alignment = ToolStripItemAlignment.Right, Tag = "Configure Tiler"};
             var tsbAppPlacements = new ToolStripButton(string.Empty, (Bitmap) Resources.ResourceManager.GetObject("tb_app_placements_png"),
                 (sender, args) =>  SwapControl(_container, _applicationConfigPage))
@@ -71,11 +73,11 @@ namespace Tiler.ui.settings
             
             _tb.Items.Add(tsbSettings);
             _tb.Items.Add(new ToolStripSeparator{Alignment = ToolStripItemAlignment.Right});
-            _tb.Items.Add(tsbAppPlacements);
-            _tb.Items.Add(new ToolStripSeparator{Alignment = ToolStripItemAlignment.Right});
             _tb.Items.Add(tsbPlacements);
+            _tb.Items.Add(new ToolStripSeparator{Alignment = ToolStripItemAlignment.Right});
+            _tb.Items.Add(tsbAppPlacements);
             
-            tsbPlacements.PerformClick();
+            tsbAppPlacements.PerformClick();
         }
 
 

@@ -8,6 +8,11 @@ using log4net;
 
 namespace Tiler.runtime
 {
+    /// <summary>
+    /// An event to indicate that windows were resized.
+    /// </summary>
+    /// <param name="source">The calling class</param>
+    /// <param name="e">Default Event Args</param>
     public delegate void WindowResizedEvent(object source, EventArgs e);
 
     
@@ -34,44 +39,61 @@ namespace Tiler.runtime
             }
         }
 
-        public void ReArrangeWindows(HashSet<string> processNames = null)
+        public void ReArrangeWindows(ISet<int> processIds = null)
         {
             // Get current applications
             var dictionary = WindowsShell.GetWindowsByProcessId();
-            var allProcesses = Program.ProcessMonitor.GetProcesses();
-            // Force to primary display for now
             var scrRects = Screen.AllScreens.ToDictionary(screen => screen.DeviceName, screen => screen.WorkingArea);
             Debug.WriteLine("ALL Working Areas = " + scrRects);
 
-            foreach (var process in allProcesses)
+            foreach (var processId in dictionary.Keys)
             {
-                if (!dictionary.ContainsKey(process.Id)) continue;
-                if (processNames != null && !processNames.Contains(process.ProcessName)) continue;
-                
+                if (processIds != null && !processIds.Contains(processId)) continue;
+
+                var process = Process.GetProcessById(processId);
                 // Check if there is a saved placement
                 var (placement, desktop) = INISettings.GetAppPlacement(process.ProcessName);
 
-                if (!scrRects.ContainsKey(desktop)) continue;
-
+                if (!scrRects.ContainsKey(desktop))
+                {
+                    log.Warn($"Could not find the monitor {desktop} configured for {process.ProcessName}. Skipping");
+                    continue;
+                }
                 var scrRect = scrRects[desktop];
-                if(Placement.None.Equals(placement)) continue;
+
+                var monitorInfo = WindowsShell.GetMonitorCoordinates();
+                if(!monitorInfo.ContainsKey(desktop))
+                {
+                    log.Warn($"Could not find the virtual coordinates for monitor {desktop} configured for {process.ProcessName}. Skipping");
+                    continue;
+                }
+                var virtualTop = monitorInfo[desktop];
+
+                if (Placement.None.Equals(placement))
+                {
+                    log.Warn($"{process.ProcessName} is configured with a `None` placement. Skipping");
+                    continue;
+                }
                 
-                AdjustWindows(scrRect, placement, dictionary[process.Id], process.ProcessName);
+                AdjustWindows(scrRect, virtualTop, placement, dictionary[process.Id], process.ProcessName);
             }
             
             WindowResizedEvent?.Invoke(this, new EventArgs());
         }
-        
+
         private void ProcessMonitorOnProcessesAddedEvent(object source, ProcessChangedEventArgs e)
         {
-            ReArrangeWindows(e.Processes.Keys.ToHashSet());
+            if (ActiveMode) ReArrangeWindows(e.Processes);
         }
 
-        private static void AdjustWindows(Rectangle screenRect, Placement placement, IEnumerable<IntPtr> windowHandles, string appName)
+        private static void AdjustWindows(Rectangle screenRect, Point virtualTop, Placement placement, IEnumerable<IntPtr> windowHandles, string appName)
         {
-            var newLocation = placement.ResolveLocation(screenRect.Width, screenRect.Height);
-            var newSize = placement.ResolveSize(screenRect.Width, screenRect.Height);
             log.Info($"Will adjust window position of {appName}");
+            var newLocation = placement.ResolveLocation(screenRect.Width, screenRect.Height);
+            log.Info($"{appName}: Screen coordinates resolved to {newLocation}");
+            newLocation.Offset(virtualTop.X, virtualTop.Y);
+            log.Info($"{appName}: Virtual coordinates resolved to {newLocation}");
+            var newSize = placement.ResolveSize(screenRect.Width, screenRect.Height);
             
             foreach (var handle in windowHandles)
             {
@@ -92,11 +114,12 @@ namespace Tiler.runtime
                 var offsetSize = new Size(newSize.Width + frame.WindowRect.Width - frame.DwmExtendedWindowRect.Width,
                     newSize.Height + frame.WindowRect.Height - frame.DwmExtendedWindowRect.Height);
                 var offsetPlacement = new Rectangle(offsetLocation, offsetSize);
-                
+
+                var oldPlacement = windowPlacement.NormalPosition;
                 windowPlacement.NormalPosition = offsetPlacement;
                 ret = WindowsShell.ChangeWindowPlacement(handle, ref windowPlacement);
                 log.Info($"{appName}: Window was moved to compensate for invisible frame from " +
-                         $"{windowPlacement.NormalPosition} to {offsetPlacement} with result code {ret}");
+                         $"{oldPlacement} to {offsetPlacement} with result code {ret}");
             }
         }
     }

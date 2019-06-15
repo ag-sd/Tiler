@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using log4net;
 using Tiler.Properties;
@@ -13,9 +14,11 @@ namespace Tiler.ui.custom
     {
         private Placement _placement;
         private string _desktop;
+        private readonly int id;
         
-        public ProcessListItem(string name, string caption)
+        public ProcessListItem(int id, string name, string caption)
         {
+            this.id = id;
             Text = name;
             Caption = caption;
             // Check for a saved placement
@@ -30,6 +33,8 @@ namespace Tiler.ui.custom
         }
 
         public string Caption { get; }
+
+        public int Id => id;
 
         public Placement Placement
         {
@@ -57,7 +62,7 @@ namespace Tiler.ui.custom
     public class ProcessListView : ListView
     {
         private static readonly ILog log = 
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         private readonly ImageList _lvwImages;
         
@@ -77,7 +82,7 @@ namespace Tiler.ui.custom
             AllowColumnReorder = false;
             FullRowSelect = true;
             GridLines = false;
-            Sorting = SortOrder.Descending;
+            //Sorting = SortOrder.Descending;
             Columns.Add("Process", -2, HorizontalAlignment.Left);
             Columns.Add("Region", -2, HorizontalAlignment.Left);
             Columns.Add("Desktop", -2, HorizontalAlignment.Left);
@@ -115,33 +120,34 @@ namespace Tiler.ui.custom
             }
         }
 
-        private void AddItems(IReadOnlyDictionary<string, Process> processes)
+        private void AddItems(IEnumerable<int> processIds)
         {
             BeginUpdate();
-            foreach (var key in processes.Keys)
+            foreach (var id in processIds)
             {
-                log.Info($"Adding {key} to list");
-                AddListViewItem(processes[key]);
+                AddListViewItem(id);
             }
             EndUpdate();
         }
 
-        private void RemoveItems(IReadOnlyDictionary<string, Process> processes)
+        private void RemoveItems(ICollection<int> processIds)
         {
             BeginUpdate();
             foreach (ProcessListItem item in Items)
             {
-                if(!processes.ContainsKey(item.Text)) continue;
+                if(!processIds.Contains(item.Id)) continue;
                 log.Info($"Removing {item.Text} from list");
                 Items.Remove(item);
             }
             EndUpdate();
         }
 
-        private void AddListViewItem(Process process)
+        private void AddListViewItem(int processId)
         {
+            var process = Process.GetProcessById(processId);
+            log.Info($"Adding {process.ProcessName} to list");
             _lvwImages.Images.Add(process.ProcessName, GetProcessIcon(process));
-            var lvi = new ProcessListItem(process.ProcessName, process.MainWindowTitle)
+            var lvi = new ProcessListItem(processId, process.ProcessName, process.MainWindowTitle)
             {
                 ImageKey = process.ProcessName
             };
@@ -150,13 +156,9 @@ namespace Tiler.ui.custom
 
         private void ShowProcesses()
         {
-            var allProcesses = Program.ProcessMonitor.GetProcesses();
-
-            foreach (var process in allProcesses)
+            foreach (var id in Program.ProcessMonitor.GetProcessIds())
             {
-                if (process.MainWindowHandle == IntPtr.Zero || string.IsNullOrEmpty(process.MainWindowTitle)) continue;
-
-                AddListViewItem(process);
+                AddListViewItem(id);
             }
         }
 
@@ -166,11 +168,9 @@ namespace Tiler.ui.custom
             {
                 if (process.MainModule != null) return Icon.ExtractAssociatedIcon(process.MainModule.FileName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 log.Error($"Could not extract the icon for process {process.ProcessName}. A default will be used");
-                Debug.WriteLine("An error occured while extracting application icon process=" 
-                                + process + " \n Exception is" + ex);
             }
 
             return (Icon) Resources.ResourceManager.GetObject("app_unknown");
