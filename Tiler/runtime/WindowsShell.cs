@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -99,7 +98,6 @@ namespace Tiler.runtime
             if (!IsWindowVisible(hWnd) || string.IsNullOrEmpty(title)) return true;
 
             GetWindowThreadProcessId(hWnd, out uint processId);
-            Debug.WriteLine("PROCESS ID Value " + processId + " Window Title is " + title);
 
             if (dict.ContainsKey((int) processId))
             {

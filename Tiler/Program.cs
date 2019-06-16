@@ -23,7 +23,7 @@ namespace Tiler
             Application.SetCompatibleTextRenderingDefault(false);
             
             log.Info("Starting Application...");
-            
+
             ProcessMonitor.Start();
             using (var mi = new AppIcon())
             {
