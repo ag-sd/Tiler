@@ -23,12 +23,12 @@ namespace Tiler.runtime
         public static (Placement, string) GetAppPlacement(string appName)
         {
             var placement = Placement.ByKey(ReadValue(appName, "region", "None"));
-            var desktop = ReadValue(appName, "desktop", Screen.PrimaryScreen.DeviceName);
+            var monitor= ReadValue(appName, "monitor", Screen.PrimaryScreen.DeviceName);
             if (Placement.None != placement)
             {
-                log.Info($"Found saved placement {placement} for {appName} on desktop {desktop}");
+                log.Info($"Found saved placement {placement} for {appName} on monitor {monitor}");
             }
-            return (placement, desktop);
+            return (placement, monitor);
         }
 
         public static void SavePlacement(Placement placement)
@@ -41,10 +41,10 @@ namespace Tiler.runtime
             WriteValue("Placements", placement.Name, null);
         }
 
-        public static void SaveAppPlacement(string appName, Placement placement, string desktop)
+        public static void SaveAppPlacement(string appName, Placement placement, string monitor)
         {
             WriteValue(appName, "region", placement.Name);
-            WriteValue(appName, "desktop", desktop);
+            WriteValue(appName, "monitor", monitor);
         }
 
         public static Dictionary<string, Placement> GetAllPlacements()

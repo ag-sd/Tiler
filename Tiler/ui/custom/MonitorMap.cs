@@ -5,7 +5,7 @@ using Tiler.runtime;
 
 namespace Tiler.ui.custom
 {
-    public class DesktopMap : Panel
+    public class MonitorMap : Panel
     {
         
         private Placement _placement;
@@ -27,10 +27,11 @@ namespace Tiler.ui.custom
                 _screen = value;
                 ConfigureWidthAndHeight();
                 Refresh();
-            } 
+            }
+            get => _screen;
         }
 
-        public DesktopMap()
+        public MonitorMap()
         {
             _screen = Screen.PrimaryScreen;
             Resize += OnResize;
@@ -98,7 +99,7 @@ namespace Tiler.ui.custom
                 }
             }
             
-            // Draw the desktop border 
+            // Draw the monitor border 
             var scrBorderLocation = new Point(x, y);
             var scrBorderSize = new Size(sWidth, sHeight);
             var rect = new Rectangle(scrBorderLocation, scrBorderSize);

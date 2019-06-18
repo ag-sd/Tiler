@@ -16,7 +16,7 @@ namespace Tiler.ui.custom
         public void SetPlacement(Placement placement)
         {
             _lblCaption.Text = placement.Name;
-            _desktopMap.Placement = placement;
+            _monitorMap.Placement = placement;
             _placementEntryPanel.Placement = placement;
         }
         
@@ -29,7 +29,7 @@ namespace Tiler.ui.custom
             
             layout.Controls.Add(_lblCaption, 0, 0);
             layout.Controls.Add(_placementEntryPanel, 0, 1);
-            layout.Controls.Add(_desktopMap, 0, 2);
+            layout.Controls.Add(_monitorMap, 0, 2);
 
             layout.ResumeLayout();
             
@@ -37,7 +37,7 @@ namespace Tiler.ui.custom
             
             ResumeLayout();
 
-            _placementEntryPanel.PlacementChangedEvent += (source, args) => { _desktopMap.Placement = args.Placement; };
+            _placementEntryPanel.PlacementChangedEvent += (source, args) => { _monitorMap.Placement = args.Placement; };
             _placementEntryPanel.PlacementChangedEvent += (source, args) => { PlacementChangedEvent?.Invoke(this, args); };
         }
         
@@ -50,7 +50,7 @@ namespace Tiler.ui.custom
             AutoEllipsis = true
         };
         
-        private readonly DesktopMap _desktopMap = new DesktopMap {Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
+        private readonly MonitorMap _monitorMap = new MonitorMap {Anchor = AnchorStyles.None, Dock = DockStyle.Fill};
 
         private readonly PlacementEntryPanel _placementEntryPanel = new PlacementEntryPanel {Dock = DockStyle.Fill};
     }

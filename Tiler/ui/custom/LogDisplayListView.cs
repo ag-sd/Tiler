@@ -28,8 +28,15 @@ namespace Tiler.ui.custom
             Columns.Add("Message", -1, HorizontalAlignment.Left);
             
             InitUI();
-            GotFocus += (sender, args) => Refresh_Click(sender, args);
+            GotFocus += Refresh_Click;
+            //ColumnClick += OnColumnClick;
         }
+
+//        private void OnColumnClick(object sender, ColumnClickEventArgs e)
+//        {
+//            if(e.Column != 0) return;
+//
+//        }
 
         private void InitUI()
         {
@@ -101,7 +108,8 @@ namespace Tiler.ui.custom
                 } 
                 lvi.SubItems.Add(tokens[i].Trim());
             }
-            Items.Add(lvi);
+
+            Items.Insert(0, lvi);
         }
     }
 }

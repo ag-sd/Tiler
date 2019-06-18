@@ -13,7 +13,7 @@ namespace Tiler.ui.custom
     public class ProcessListItem : ListViewItem
     {
         private Placement _placement;
-        private string _desktop;
+        private string _monitor;
         private readonly int id;
         
         public ProcessListItem(int id, string name, string caption)
@@ -22,14 +22,14 @@ namespace Tiler.ui.custom
             Text = name;
             Caption = caption;
             // Check for a saved placement
-            (_placement, _desktop) = INISettings.GetAppPlacement(name);
+            (_placement, _monitor) = INISettings.GetAppPlacement(name);
             SubItems.Add(new ListViewSubItem(this, _placement.Name));
-            SubItems.Add(new ListViewSubItem(this, _desktop));
+            SubItems.Add(new ListViewSubItem(this, _monitor));
         }
 
         private void SavePlacement()
         {
-            INISettings.SaveAppPlacement(Text, _placement, _desktop);
+            INISettings.SaveAppPlacement(Text, _placement, _monitor);
         }
 
         public string Caption { get; }
@@ -47,12 +47,12 @@ namespace Tiler.ui.custom
             }
         }
 
-        public string Desktop
+        public string Monitor
         {
-            get => _desktop;
+            get => _monitor;
             set
             {
-                _desktop = value;
+                _monitor = value;
                 SubItems[2].Text = value;
                 SavePlacement();
             }
@@ -85,7 +85,7 @@ namespace Tiler.ui.custom
             //Sorting = SortOrder.Descending;
             Columns.Add("Process", -2, HorizontalAlignment.Left);
             Columns.Add("Region", -2, HorizontalAlignment.Left);
-            Columns.Add("Desktop", -2, HorizontalAlignment.Left);
+            Columns.Add("Monitor", -2, HorizontalAlignment.Left);
             SmallImageList = _lvwImages;
 
             _lvwImages.ColorDepth = ColorDepth.Depth32Bit;

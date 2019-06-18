@@ -36,7 +36,7 @@ namespace Tiler.ui.settings
             {
                 if (!args.IsSelected || args.Item == null) return;
                 var item = (ProcessListItem) args.Item;
-                log.Info($"Application selected was {item.Caption} with placement of {item.Placement} on desktop {item.Desktop}");
+                log.Info($"Application selected was {item.Caption} with placement of {item.Placement} on monitor {item.Monitor}");
                 _editor.SetApplication(item);
             };
             

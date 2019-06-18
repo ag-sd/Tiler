@@ -2,22 +2,26 @@ using System.Windows.Forms;
 
 namespace Tiler.ui.custom
 {
-    public class DesktopComboBox : ComboBox
+    public class ScreenItem
     {
-        private class ScreenItem
-        {
-            private readonly Screen _screen;
-            public ScreenItem(Screen screen)
-            {
-                _screen = screen;
-            }
+        public Screen Screen { get; }
 
-            public override string ToString()
-            {
-                return _screen.DeviceName;
-            }
+        public string Text => ToString();
+
+        public ScreenItem(Screen screen)
+        {
+            Screen = screen;
         }
-        public DesktopComboBox()
+
+        public override string ToString()
+        {
+            return Screen.DeviceName;
+        }
+    }
+    
+    public class MonitorComboBox : ComboBox
+    {
+        public MonitorComboBox()
         {
             foreach (var screen in Screen.AllScreens)
             {
@@ -32,11 +36,11 @@ namespace Tiler.ui.custom
             DropDownStyle = ComboBoxStyle.DropDownList;
         }
         
-        public void SetItem(string desktop)
+        public void SetItem(string monitor)
         {
             foreach (var item in Items)
             {
-                if (!item.Equals(desktop)) continue;
+                if (!item.Equals(monitor)) continue;
                 SelectedItem = item;
                 return;
             }

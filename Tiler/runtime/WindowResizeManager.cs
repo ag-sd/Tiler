@@ -52,22 +52,14 @@ namespace Tiler.runtime
 
                 var process = Process.GetProcessById(processId);
                 // Check if there is a saved placement
-                var (placement, desktop) = INISettings.GetAppPlacement(process.ProcessName);
+                var (placement, monitor) = INISettings.GetAppPlacement(process.ProcessName);
 
-                if (!scrRects.ContainsKey(desktop))
+                if (!scrRects.ContainsKey(monitor))
                 {
-                    log.Warn($"Could not find the monitor {desktop} configured for {process.ProcessName}. Skipping");
+                    log.Warn($"Could not find the monitor {monitor} configured for {process.ProcessName}. Skipping");
                     continue;
                 }
-                var scrRect = scrRects[desktop];
-
-                var monitorInfo = WindowsShell.GetMonitorCoordinates();
-                if(!monitorInfo.ContainsKey(desktop))
-                {
-                    log.Warn($"Could not find the virtual coordinates for monitor {desktop} configured for {process.ProcessName}. Skipping");
-                    continue;
-                }
-                var virtualTop = monitorInfo[desktop];
+                var scrRect = scrRects[monitor];
 
                 if (Placement.None.Equals(placement))
                 {
@@ -75,7 +67,7 @@ namespace Tiler.runtime
                     continue;
                 }
                 
-                AdjustWindows(scrRect, virtualTop, placement, dictionary[process.Id], process.ProcessName);
+                AdjustWindows(scrRect, placement, dictionary[process.Id], process.ProcessName);
             }
             
             WindowResizedEvent?.Invoke(this, new EventArgs());
@@ -86,12 +78,12 @@ namespace Tiler.runtime
             if (ActiveMode) ReArrangeWindows(e.Processes);
         }
 
-        private static void AdjustWindows(Rectangle screenRect, Point virtualTop, Placement placement, IEnumerable<IntPtr> windowHandles, string appName)
+        private static void AdjustWindows(Rectangle screenRect, Placement placement, IEnumerable<IntPtr> windowHandles, string appName)
         {
             log.Info($"Will adjust window position of {appName}");
             var newLocation = placement.ResolveLocation(screenRect.Width, screenRect.Height);
             log.Info($"{appName}: Screen coordinates resolved to {newLocation}");
-            newLocation.Offset(virtualTop.X, virtualTop.Y);
+            newLocation.Offset(screenRect.X, screenRect.Y);
             log.Info($"{appName}: Virtual coordinates resolved to {newLocation}");
             var newSize = placement.ResolveSize(screenRect.Width, screenRect.Height);
             

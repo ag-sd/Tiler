@@ -8,6 +8,6 @@ Tiler is a lightweight window arrangement utility for Windows.
 - [x] Detect new windows opening
 - [x] Fix apps who display errors in resizing
 - [x] Improve general UI look
-- [ ] Regions can be edited from the Desktop Map
+- [ ] Regions can be edited from the Monitor Map
 
 ### Changelog
