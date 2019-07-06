@@ -56,8 +56,8 @@ namespace Tiler.runtime
 
                 if (!scrRects.ContainsKey(monitor))
                 {
-                    log.Warn($"Could not find the monitor {monitor} configured for {process.ProcessName}. Skipping");
-                    continue;
+                    log.Warn($"Could not find the monitor {monitor} configured for {process.ProcessName}. Default to primary monitor");
+                    monitor = Screen.PrimaryScreen.DeviceName;
                 }
                 var scrRect = scrRects[monitor];
 

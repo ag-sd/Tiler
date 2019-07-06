@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using log4net;
+using Microsoft.Win32;
 
 namespace Tiler.runtime
 {
@@ -21,7 +21,7 @@ namespace Tiler.runtime
         }
     }
     
-    public class ProcessMonitor
+    public class ProcessMonitor : IDisposable
     {
         private static readonly ILog log = 
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -41,6 +41,20 @@ namespace Tiler.runtime
                 AutoReset = true
             };
             _systemMonitorTimer.Elapsed += SystemMonitorTimerOnElapsed;
+            SystemEvents.DisplaySettingsChanged += SystemEventsOnDisplaySettingsChanged;
+        }
+
+        private void SystemEventsOnDisplaySettingsChanged(object sender, EventArgs e)
+        {
+            log.Info("System detected that Desktop settings changed. Triggering a hard update...");
+            Stop();
+            // Snapshot all process
+            var allApps = new ProcessChangedEventArgs(new HashSet<int>(_processSet));
+            // Trigger a notification to remove all of them
+            ProcessesRemovedEvent?.Invoke(this, allApps);
+            _processSet.Clear();
+            // Restart the timer to force a re-trigger of all placements
+            Start();
         }
 
         private void SystemMonitorTimerOnElapsed(object sender, ElapsedEventArgs e)
@@ -83,5 +97,10 @@ namespace Tiler.runtime
         public void Stop() => _systemMonitorTimer.Enabled = false;
         
         public IEnumerable<int> GetProcessIds() => new HashSet<int>(_processSet);
+        
+        public void Dispose()
+        {
+            SystemEvents.DisplaySettingsChanged -= SystemEventsOnDisplaySettingsChanged;
+        }
     }
 }
