@@ -46,7 +46,7 @@ namespace Tiler.runtime
 
         private void SystemEventsOnDisplaySettingsChanged(object sender, EventArgs e)
         {
-            log.Info("System detected that Desktop settings changed. Triggering a hard update...");
+            log.Info("Desktop settings changed. Triggering a hard update...");
             Stop();
             // Snapshot all process
             var allApps = new ProcessChangedEventArgs(new HashSet<int>(_processSet));
