@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using log4net;
+using Tiler.runtime;
 using Tiler.ui.custom;
 
 namespace Tiler.ui.settings
@@ -10,13 +11,8 @@ namespace Tiler.ui.settings
         private static readonly ILog log = 
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly LogDisplayListView _lvw;
-        private readonly SplitContainer _split;
-
         public GeneralSettingsPage()
         {
-            _lvw = new LogDisplayListView();
-            _split = new SplitContainer();
             InitUi();
         }
 
@@ -24,21 +20,46 @@ namespace Tiler.ui.settings
         {
             SuspendLayout();
             
-            ((System.ComponentModel.ISupportInitialize) _split).BeginInit();
-            _split.SuspendLayout();
-            _split.Dock = DockStyle.Fill;
-
-            _lvw.Dock = DockStyle.Fill;
+            var layout = new TableLayoutPanel {Dock = DockStyle.Fill};
+            layout.SuspendLayout();
             
-            Controls.Add(_split);
+            var rbShowSettings = new RadioButton{Text = "Show Settings", Dock = DockStyle.Top};
+            rbShowSettings.Click += (sender, args) =>
+            {
+                Program.Settings.TaskIconClickShowsSettings = rbShowSettings.Checked;
+                INISettings.SaveSettings(Program.Settings);
+            };
             
-            _split.FixedPanel = FixedPanel.Panel1;
-            _split.Size = new Size(500, 273);
-            _split.SplitterDistance = 275;
-            _split.TabIndex = 0;
-            _split.Panel1.Controls.Add(_lvw);
+            var rbArrangeWindows = new RadioButton{Text = "Arrange Windows", Dock = DockStyle.Bottom};
+            rbArrangeWindows.Click += (sender, args) =>
+            {
+                Program.Settings.TaskIconClickShowsSettings = rbShowSettings.Checked;
+                INISettings.SaveSettings(Program.Settings);
+            };
+            rbShowSettings.Checked = Program.Settings.TaskIconClickShowsSettings;
+            
+            var logViewer = new LinkLabel{Text = "Show Logs"};
+            logViewer.Click += (sender, args) =>
+            {
+                var form = new Form{
+                    Text = $"Logs - {Application.ProductName} {Application.ProductVersion}", 
+                    Icon = ParentForm.Icon
+                };
+                form.Controls.Add(new LogDisplayListView{Dock = DockStyle.Fill});
+                form.ShowDialog(this);
+            }; 
+            
+            var grpBox = new GroupBox{Text = "Clicking on System Tray Icon will..."};
+            grpBox.Controls.Add(rbShowSettings);
+            grpBox.Controls.Add(rbArrangeWindows);
+            grpBox.Height = rbArrangeWindows.Height * 3;
 
-            _split.ResumeLayout();
+            layout.Controls.Add(grpBox, 0, 1);
+            layout.Controls.Add(logViewer, 0, 0);
+            
+            layout.ResumeLayout();
+            
+            Controls.Add(layout);
 
             ResumeLayout();
         }

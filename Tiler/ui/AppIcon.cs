@@ -1,10 +1,12 @@
 using System;
 using System.Drawing;
+using System.Linq.Expressions;
 using System.Windows.Forms;
 using log4net;
 using Tiler.Properties;
 using Tiler.runtime;
 using Tiler.ui.settings;
+using Settings = Tiler.runtime.Settings;
 
 namespace Tiler.ui
 {
@@ -39,10 +41,15 @@ namespace Tiler.ui
         private void ni_MouseClick(object sender, MouseEventArgs e)
         {
             // Handle mouse button clicks.
-            if (e.Button == MouseButtons.Left && !_settingsDialog.Visible)
+            if (e.Button != MouseButtons.Left) return;
+            if (Program.Settings.TaskIconClickShowsSettings && !_settingsDialog.Visible)
             {
                 log.Info("Launching settings dialog");
                 _settingsDialog.ShowDialog();
+            }
+            else
+            {
+                _resizeManager.ReArrangeWindows();
             }
         }
         

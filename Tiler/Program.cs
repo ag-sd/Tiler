@@ -9,6 +9,7 @@ namespace Tiler
     internal static class Program
     {
         public static readonly ProcessMonitor ProcessMonitor = new ProcessMonitor();
+        public static readonly Settings Settings = INISettings.ReadSettings();
         private static readonly ILog log = 
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

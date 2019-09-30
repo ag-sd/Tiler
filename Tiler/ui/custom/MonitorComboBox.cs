@@ -1,4 +1,6 @@
+using System;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace Tiler.ui.custom
 {
@@ -23,6 +25,20 @@ namespace Tiler.ui.custom
     {
         public MonitorComboBox()
         {
+            PopulateComboBox();
+
+            DropDownStyle = ComboBoxStyle.DropDownList;
+            SystemEvents.DisplaySettingsChanged += SystemEventsOnDisplaySettingsChanged;
+        }
+
+        private void SystemEventsOnDisplaySettingsChanged(object sender, EventArgs e)
+        {
+            PopulateComboBox();
+        }
+
+        private void PopulateComboBox()
+        {
+            Items.Clear();
             foreach (var screen in Screen.AllScreens)
             {
                 var item = new ScreenItem(screen);
@@ -32,10 +48,8 @@ namespace Tiler.ui.custom
                     SelectedItem = item;
                 }
             }
-
-            DropDownStyle = ComboBoxStyle.DropDownList;
         }
-        
+
         public void SetItem(string monitor)
         {
             foreach (var item in Items)
@@ -44,6 +58,12 @@ namespace Tiler.ui.custom
                 SelectedItem = item;
                 return;
             }
+        }
+        
+        public new void Dispose()
+        {
+            base.Dispose();
+            SystemEvents.DisplaySettingsChanged -= SystemEventsOnDisplaySettingsChanged;
         }
     }
 }

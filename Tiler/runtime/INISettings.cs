@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Windows.Forms;
 using log4net;
@@ -29,6 +31,31 @@ namespace Tiler.runtime
                 log.Info($"Found saved placement {placement} for {appName} on monitor {monitor}");
             }
             return (placement, monitor);
+        }
+
+        public static void SaveSettings(Settings settings)
+        {
+            var stream = new MemoryStream();
+            var serializer = new DataContractJsonSerializer(settings.GetType());
+            serializer.WriteObject(stream, settings);
+            var json = stream.ToArray();  
+            stream.Close();  
+            WriteValue("Settings", "Application", 
+                Encoding.UTF8.GetString(json, 0, json.Length));
+        }
+
+        public static Settings ReadSettings()
+        {
+            var json = ReadValue("Settings", "Application", string.Empty);
+            if (json == string.Empty)
+            {
+                return new Settings();
+            }
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));  
+            var deserializer = new DataContractJsonSerializer(typeof(Settings));  
+            var settings = deserializer.ReadObject(stream) as Settings;  
+            stream.Close();  
+            return settings;  
         }
 
         public static void SavePlacement(Placement placement)
