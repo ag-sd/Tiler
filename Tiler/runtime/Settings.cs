@@ -5,7 +5,6 @@ namespace Tiler.runtime
     [DataContract]
     public class Settings
     {
-        [DataMember]
-        internal bool TaskIconClickShowsSettings;
+        [DataMember] internal bool TaskIconClickShowsSettings;
     }
 }
